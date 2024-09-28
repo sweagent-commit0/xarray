@@ -1,46 +1,20 @@
 """Mixin classes with reduction operations."""
-
-# This file was generated using xarray.util.generate_aggregations. Do not edit manually.
-
 from __future__ import annotations
-
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Callable
-
 from xarray.core import duck_array_ops
 from xarray.core.options import OPTIONS
 from xarray.core.types import Dims, Self
 from xarray.core.utils import contains_only_chunked_or_numpy, module_available
-
 if TYPE_CHECKING:
     from xarray.core.dataarray import DataArray
     from xarray.core.dataset import Dataset
-
-flox_available = module_available("flox")
-
+flox_available = module_available('flox')
 
 class DatasetAggregations:
     __slots__ = ()
 
-    def reduce(
-        self,
-        func: Callable[..., Any],
-        dim: Dims = None,
-        *,
-        axis: int | Sequence[int] | None = None,
-        keep_attrs: bool | None = None,
-        keepdims: bool = False,
-        **kwargs: Any,
-    ) -> Self:
-        raise NotImplementedError()
-
-    def count(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def count(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``count`` along some dimension(s).
 
@@ -98,21 +72,9 @@ class DatasetAggregations:
         Data variables:
             da       int64 8B 5
         """
-        return self.reduce(
-            duck_array_ops.count,
-            dim=dim,
-            numeric_only=False,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def all(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def all(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``all`` along some dimension(s).
 
@@ -170,21 +132,9 @@ class DatasetAggregations:
         Data variables:
             da       bool 1B False
         """
-        return self.reduce(
-            duck_array_ops.array_all,
-            dim=dim,
-            numeric_only=False,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def any(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def any(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``any`` along some dimension(s).
 
@@ -242,22 +192,9 @@ class DatasetAggregations:
         Data variables:
             da       bool 1B True
         """
-        return self.reduce(
-            duck_array_ops.array_any,
-            dim=dim,
-            numeric_only=False,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def max(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def max(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``max`` along some dimension(s).
 
@@ -328,23 +265,9 @@ class DatasetAggregations:
         Data variables:
             da       float64 8B nan
         """
-        return self.reduce(
-            duck_array_ops.max,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=False,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def min(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def min(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``min`` along some dimension(s).
 
@@ -415,23 +338,9 @@ class DatasetAggregations:
         Data variables:
             da       float64 8B nan
         """
-        return self.reduce(
-            duck_array_ops.min,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=False,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def mean(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def mean(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``mean`` along some dimension(s).
 
@@ -506,24 +415,9 @@ class DatasetAggregations:
         Data variables:
             da       float64 8B nan
         """
-        return self.reduce(
-            duck_array_ops.mean,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def prod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def prod(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``prod`` along some dimension(s).
 
@@ -612,25 +506,9 @@ class DatasetAggregations:
         Data variables:
             da       float64 8B 0.0
         """
-        return self.reduce(
-            duck_array_ops.prod,
-            dim=dim,
-            skipna=skipna,
-            min_count=min_count,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def sum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def sum(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``sum`` along some dimension(s).
 
@@ -719,25 +597,9 @@ class DatasetAggregations:
         Data variables:
             da       float64 8B 8.0
         """
-        return self.reduce(
-            duck_array_ops.sum,
-            dim=dim,
-            skipna=skipna,
-            min_count=min_count,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def std(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def std(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``std`` along some dimension(s).
 
@@ -823,25 +685,9 @@ class DatasetAggregations:
         Data variables:
             da       float64 8B 1.14
         """
-        return self.reduce(
-            duck_array_ops.std,
-            dim=dim,
-            skipna=skipna,
-            ddof=ddof,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def var(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def var(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``var`` along some dimension(s).
 
@@ -927,24 +773,9 @@ class DatasetAggregations:
         Data variables:
             da       float64 8B 1.3
         """
-        return self.reduce(
-            duck_array_ops.var,
-            dim=dim,
-            skipna=skipna,
-            ddof=ddof,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def median(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def median(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``median`` along some dimension(s).
 
@@ -1019,23 +850,9 @@ class DatasetAggregations:
         Data variables:
             da       float64 8B nan
         """
-        return self.reduce(
-            duck_array_ops.median,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumsum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def cumsum(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``cumsum`` along some dimension(s).
 
@@ -1112,23 +929,9 @@ class DatasetAggregations:
         Data variables:
             da       (time) float64 48B 1.0 3.0 6.0 6.0 8.0 nan
         """
-        return self.reduce(
-            duck_array_ops.cumsum,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumprod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def cumprod(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this Dataset's data by applying ``cumprod`` along some dimension(s).
 
@@ -1205,38 +1008,12 @@ class DatasetAggregations:
         Data variables:
             da       (time) float64 48B 1.0 2.0 6.0 0.0 0.0 nan
         """
-        return self.reduce(
-            duck_array_ops.cumprod,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
-
+        pass
 
 class DataArrayAggregations:
     __slots__ = ()
 
-    def reduce(
-        self,
-        func: Callable[..., Any],
-        dim: Dims = None,
-        *,
-        axis: int | Sequence[int] | None = None,
-        keep_attrs: bool | None = None,
-        keepdims: bool = False,
-        **kwargs: Any,
-    ) -> Self:
-        raise NotImplementedError()
-
-    def count(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def count(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``count`` along some dimension(s).
 
@@ -1289,20 +1066,9 @@ class DataArrayAggregations:
         <xarray.DataArray ()> Size: 8B
         array(5)
         """
-        return self.reduce(
-            duck_array_ops.count,
-            dim=dim,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def all(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def all(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``all`` along some dimension(s).
 
@@ -1355,20 +1121,9 @@ class DataArrayAggregations:
         <xarray.DataArray ()> Size: 1B
         array(False)
         """
-        return self.reduce(
-            duck_array_ops.array_all,
-            dim=dim,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def any(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def any(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``any`` along some dimension(s).
 
@@ -1421,21 +1176,9 @@ class DataArrayAggregations:
         <xarray.DataArray ()> Size: 1B
         array(True)
         """
-        return self.reduce(
-            duck_array_ops.array_any,
-            dim=dim,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def max(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def max(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``max`` along some dimension(s).
 
@@ -1499,22 +1242,9 @@ class DataArrayAggregations:
         <xarray.DataArray ()> Size: 8B
         array(nan)
         """
-        return self.reduce(
-            duck_array_ops.max,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def min(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def min(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``min`` along some dimension(s).
 
@@ -1578,22 +1308,9 @@ class DataArrayAggregations:
         <xarray.DataArray ()> Size: 8B
         array(nan)
         """
-        return self.reduce(
-            duck_array_ops.min,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def mean(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def mean(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``mean`` along some dimension(s).
 
@@ -1661,23 +1378,9 @@ class DataArrayAggregations:
         <xarray.DataArray ()> Size: 8B
         array(nan)
         """
-        return self.reduce(
-            duck_array_ops.mean,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def prod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def prod(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``prod`` along some dimension(s).
 
@@ -1757,24 +1460,9 @@ class DataArrayAggregations:
         <xarray.DataArray ()> Size: 8B
         array(0.)
         """
-        return self.reduce(
-            duck_array_ops.prod,
-            dim=dim,
-            skipna=skipna,
-            min_count=min_count,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def sum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def sum(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``sum`` along some dimension(s).
 
@@ -1854,24 +1542,9 @@ class DataArrayAggregations:
         <xarray.DataArray ()> Size: 8B
         array(8.)
         """
-        return self.reduce(
-            duck_array_ops.sum,
-            dim=dim,
-            skipna=skipna,
-            min_count=min_count,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def std(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def std(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``std`` along some dimension(s).
 
@@ -1948,24 +1621,9 @@ class DataArrayAggregations:
         <xarray.DataArray ()> Size: 8B
         array(1.14017543)
         """
-        return self.reduce(
-            duck_array_ops.std,
-            dim=dim,
-            skipna=skipna,
-            ddof=ddof,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def var(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def var(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``var`` along some dimension(s).
 
@@ -2042,23 +1700,9 @@ class DataArrayAggregations:
         <xarray.DataArray ()> Size: 8B
         array(1.3)
         """
-        return self.reduce(
-            duck_array_ops.var,
-            dim=dim,
-            skipna=skipna,
-            ddof=ddof,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def median(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def median(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``median`` along some dimension(s).
 
@@ -2126,22 +1770,9 @@ class DataArrayAggregations:
         <xarray.DataArray ()> Size: 8B
         array(nan)
         """
-        return self.reduce(
-            duck_array_ops.median,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumsum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def cumsum(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``cumsum`` along some dimension(s).
 
@@ -2215,22 +1846,9 @@ class DataArrayAggregations:
           * time     (time) datetime64[ns] 48B 2001-01-31 2001-02-28 ... 2001-06-30
             labels   (time) <U1 24B 'a' 'b' 'c' 'c' 'b' 'a'
         """
-        return self.reduce(
-            duck_array_ops.cumsum,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumprod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def cumprod(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this DataArray's data by applying ``cumprod`` along some dimension(s).
 
@@ -2304,44 +1922,12 @@ class DataArrayAggregations:
           * time     (time) datetime64[ns] 48B 2001-01-31 2001-02-28 ... 2001-06-30
             labels   (time) <U1 24B 'a' 'b' 'c' 'c' 'b' 'a'
         """
-        return self.reduce(
-            duck_array_ops.cumprod,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
-
+        pass
 
 class DatasetGroupByAggregations:
     _obj: Dataset
 
-    def reduce(
-        self,
-        func: Callable[..., Any],
-        dim: Dims = None,
-        *,
-        axis: int | Sequence[int] | None = None,
-        keep_attrs: bool | None = None,
-        keepdims: bool = False,
-        **kwargs: Any,
-    ) -> Dataset:
-        raise NotImplementedError()
-
-    def _flox_reduce(
-        self,
-        dim: Dims,
-        **kwargs: Any,
-    ) -> Dataset:
-        raise NotImplementedError()
-
-    def count(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def count(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``count`` along some dimension(s).
 
@@ -2409,35 +1995,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (labels) int64 24B 1 2 2
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="count",
-                dim=dim,
-                numeric_only=False,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.count,
-                dim=dim,
-                numeric_only=False,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def all(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def all(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``all`` along some dimension(s).
 
@@ -2505,35 +2065,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (labels) bool 3B False True True
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="all",
-                dim=dim,
-                numeric_only=False,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.array_all,
-                dim=dim,
-                numeric_only=False,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def any(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def any(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``any`` along some dimension(s).
 
@@ -2601,36 +2135,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (labels) bool 3B True True True
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="any",
-                dim=dim,
-                numeric_only=False,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.array_any,
-                dim=dim,
-                numeric_only=False,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def max(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def max(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``max`` along some dimension(s).
 
@@ -2713,38 +2220,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (labels) float64 24B nan 2.0 3.0
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="max",
-                dim=dim,
-                skipna=skipna,
-                numeric_only=False,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.max,
-                dim=dim,
-                skipna=skipna,
-                numeric_only=False,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def min(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def min(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``min`` along some dimension(s).
 
@@ -2827,38 +2305,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (labels) float64 24B nan 2.0 0.0
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="min",
-                dim=dim,
-                skipna=skipna,
-                numeric_only=False,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.min,
-                dim=dim,
-                skipna=skipna,
-                numeric_only=False,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def mean(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def mean(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``mean`` along some dimension(s).
 
@@ -2943,39 +2392,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (labels) float64 24B nan 2.0 1.5
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="mean",
-                dim=dim,
-                skipna=skipna,
-                numeric_only=True,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.mean,
-                dim=dim,
-                skipna=skipna,
-                numeric_only=True,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def prod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def prod(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``prod`` along some dimension(s).
 
@@ -3076,41 +2495,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (labels) float64 24B nan 4.0 0.0
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="prod",
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                numeric_only=True,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.prod,
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                numeric_only=True,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def sum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def sum(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``sum`` along some dimension(s).
 
@@ -3211,41 +2598,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (labels) float64 24B nan 4.0 3.0
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="sum",
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                numeric_only=True,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.sum,
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                numeric_only=True,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def std(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def std(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``std`` along some dimension(s).
 
@@ -3343,41 +2698,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (labels) float64 24B nan 0.0 2.121
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="std",
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                numeric_only=True,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.std,
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                numeric_only=True,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def var(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def var(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``var`` along some dimension(s).
 
@@ -3475,40 +2798,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (labels) float64 24B nan 0.0 4.5
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="var",
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                numeric_only=True,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.var,
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                numeric_only=True,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def median(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def median(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``median`` along some dimension(s).
 
@@ -3593,23 +2885,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (labels) float64 24B nan 2.0 1.5
         """
-        return self.reduce(
-            duck_array_ops.median,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumsum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def cumsum(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``cumsum`` along some dimension(s).
 
@@ -3692,23 +2970,9 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (time) float64 48B 1.0 2.0 3.0 3.0 4.0 nan
         """
-        return self.reduce(
-            duck_array_ops.cumsum,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumprod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def cumprod(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``cumprod`` along some dimension(s).
 
@@ -3791,45 +3055,12 @@ class DatasetGroupByAggregations:
         Data variables:
             da       (time) float64 48B 1.0 2.0 3.0 0.0 4.0 nan
         """
-        return self.reduce(
-            duck_array_ops.cumprod,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
-
+        pass
 
 class DatasetResampleAggregations:
     _obj: Dataset
 
-    def reduce(
-        self,
-        func: Callable[..., Any],
-        dim: Dims = None,
-        *,
-        axis: int | Sequence[int] | None = None,
-        keep_attrs: bool | None = None,
-        keepdims: bool = False,
-        **kwargs: Any,
-    ) -> Dataset:
-        raise NotImplementedError()
-
-    def _flox_reduce(
-        self,
-        dim: Dims,
-        **kwargs: Any,
-    ) -> Dataset:
-        raise NotImplementedError()
-
-    def count(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def count(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``count`` along some dimension(s).
 
@@ -3897,35 +3128,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) int64 24B 1 3 1
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="count",
-                dim=dim,
-                numeric_only=False,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.count,
-                dim=dim,
-                numeric_only=False,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def all(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def all(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``all`` along some dimension(s).
 
@@ -3993,35 +3198,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) bool 3B True True False
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="all",
-                dim=dim,
-                numeric_only=False,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.array_all,
-                dim=dim,
-                numeric_only=False,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def any(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def any(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``any`` along some dimension(s).
 
@@ -4089,36 +3268,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) bool 3B True True True
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="any",
-                dim=dim,
-                numeric_only=False,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.array_any,
-                dim=dim,
-                numeric_only=False,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def max(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def max(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``max`` along some dimension(s).
 
@@ -4201,38 +3353,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) float64 24B 1.0 3.0 nan
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="max",
-                dim=dim,
-                skipna=skipna,
-                numeric_only=False,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.max,
-                dim=dim,
-                skipna=skipna,
-                numeric_only=False,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def min(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def min(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``min`` along some dimension(s).
 
@@ -4315,38 +3438,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) float64 24B 1.0 0.0 nan
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="min",
-                dim=dim,
-                skipna=skipna,
-                numeric_only=False,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.min,
-                dim=dim,
-                skipna=skipna,
-                numeric_only=False,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def mean(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def mean(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``mean`` along some dimension(s).
 
@@ -4431,39 +3525,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) float64 24B 1.0 1.667 nan
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="mean",
-                dim=dim,
-                skipna=skipna,
-                numeric_only=True,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.mean,
-                dim=dim,
-                skipna=skipna,
-                numeric_only=True,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def prod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def prod(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``prod`` along some dimension(s).
 
@@ -4564,41 +3628,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) float64 24B nan 0.0 nan
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="prod",
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                numeric_only=True,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.prod,
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                numeric_only=True,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def sum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def sum(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``sum`` along some dimension(s).
 
@@ -4699,41 +3731,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) float64 24B nan 5.0 nan
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="sum",
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                numeric_only=True,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.sum,
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                numeric_only=True,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def std(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def std(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``std`` along some dimension(s).
 
@@ -4831,41 +3831,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) float64 24B nan 1.528 nan
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="std",
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                numeric_only=True,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.std,
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                numeric_only=True,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def var(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def var(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``var`` along some dimension(s).
 
@@ -4963,40 +3931,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) float64 24B nan 2.333 nan
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="var",
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                numeric_only=True,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.var,
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                numeric_only=True,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def median(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def median(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``median`` along some dimension(s).
 
@@ -5081,23 +4018,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) float64 24B 1.0 2.0 nan
         """
-        return self.reduce(
-            duck_array_ops.median,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumsum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def cumsum(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``cumsum`` along some dimension(s).
 
@@ -5180,23 +4103,9 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) float64 48B 1.0 2.0 5.0 5.0 2.0 nan
         """
-        return self.reduce(
-            duck_array_ops.cumsum,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumprod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def cumprod(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> Dataset:
         """
         Reduce this Dataset's data by applying ``cumprod`` along some dimension(s).
 
@@ -5279,45 +4188,12 @@ class DatasetResampleAggregations:
         Data variables:
             da       (time) float64 48B 1.0 2.0 6.0 0.0 2.0 nan
         """
-        return self.reduce(
-            duck_array_ops.cumprod,
-            dim=dim,
-            skipna=skipna,
-            numeric_only=True,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
-
+        pass
 
 class DataArrayGroupByAggregations:
     _obj: DataArray
 
-    def reduce(
-        self,
-        func: Callable[..., Any],
-        dim: Dims = None,
-        *,
-        axis: int | Sequence[int] | None = None,
-        keep_attrs: bool | None = None,
-        keepdims: bool = False,
-        **kwargs: Any,
-    ) -> DataArray:
-        raise NotImplementedError()
-
-    def _flox_reduce(
-        self,
-        dim: Dims,
-        **kwargs: Any,
-    ) -> DataArray:
-        raise NotImplementedError()
-
-    def count(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def count(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``count`` along some dimension(s).
 
@@ -5380,33 +4256,9 @@ class DataArrayGroupByAggregations:
         Coordinates:
           * labels   (labels) object 24B 'a' 'b' 'c'
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="count",
-                dim=dim,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.count,
-                dim=dim,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def all(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def all(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``all`` along some dimension(s).
 
@@ -5469,33 +4321,9 @@ class DataArrayGroupByAggregations:
         Coordinates:
           * labels   (labels) object 24B 'a' 'b' 'c'
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="all",
-                dim=dim,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.array_all,
-                dim=dim,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def any(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def any(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``any`` along some dimension(s).
 
@@ -5558,34 +4386,9 @@ class DataArrayGroupByAggregations:
         Coordinates:
           * labels   (labels) object 24B 'a' 'b' 'c'
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="any",
-                dim=dim,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.array_any,
-                dim=dim,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def max(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def max(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``max`` along some dimension(s).
 
@@ -5661,36 +4464,9 @@ class DataArrayGroupByAggregations:
         Coordinates:
           * labels   (labels) object 24B 'a' 'b' 'c'
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="max",
-                dim=dim,
-                skipna=skipna,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.max,
-                dim=dim,
-                skipna=skipna,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def min(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def min(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``min`` along some dimension(s).
 
@@ -5766,36 +4542,9 @@ class DataArrayGroupByAggregations:
         Coordinates:
           * labels   (labels) object 24B 'a' 'b' 'c'
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="min",
-                dim=dim,
-                skipna=skipna,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.min,
-                dim=dim,
-                skipna=skipna,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def mean(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def mean(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``mean`` along some dimension(s).
 
@@ -5873,37 +4622,9 @@ class DataArrayGroupByAggregations:
         Coordinates:
           * labels   (labels) object 24B 'a' 'b' 'c'
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="mean",
-                dim=dim,
-                skipna=skipna,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.mean,
-                dim=dim,
-                skipna=skipna,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def prod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def prod(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``prod`` along some dimension(s).
 
@@ -5995,39 +4716,9 @@ class DataArrayGroupByAggregations:
         Coordinates:
           * labels   (labels) object 24B 'a' 'b' 'c'
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="prod",
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.prod,
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def sum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def sum(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``sum`` along some dimension(s).
 
@@ -6119,39 +4810,9 @@ class DataArrayGroupByAggregations:
         Coordinates:
           * labels   (labels) object 24B 'a' 'b' 'c'
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="sum",
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.sum,
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def std(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def std(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``std`` along some dimension(s).
 
@@ -6240,39 +4901,9 @@ class DataArrayGroupByAggregations:
         Coordinates:
           * labels   (labels) object 24B 'a' 'b' 'c'
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="std",
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.std,
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def var(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def var(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``var`` along some dimension(s).
 
@@ -6361,38 +4992,9 @@ class DataArrayGroupByAggregations:
         Coordinates:
           * labels   (labels) object 24B 'a' 'b' 'c'
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="var",
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.var,
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def median(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def median(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``median`` along some dimension(s).
 
@@ -6470,22 +5072,9 @@ class DataArrayGroupByAggregations:
         Coordinates:
           * labels   (labels) object 24B 'a' 'b' 'c'
         """
-        return self.reduce(
-            duck_array_ops.median,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumsum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def cumsum(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``cumsum`` along some dimension(s).
 
@@ -6565,22 +5154,9 @@ class DataArrayGroupByAggregations:
           * time     (time) datetime64[ns] 48B 2001-01-31 2001-02-28 ... 2001-06-30
             labels   (time) <U1 24B 'a' 'b' 'c' 'c' 'b' 'a'
         """
-        return self.reduce(
-            duck_array_ops.cumsum,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumprod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def cumprod(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``cumprod`` along some dimension(s).
 
@@ -6660,44 +5236,12 @@ class DataArrayGroupByAggregations:
           * time     (time) datetime64[ns] 48B 2001-01-31 2001-02-28 ... 2001-06-30
             labels   (time) <U1 24B 'a' 'b' 'c' 'c' 'b' 'a'
         """
-        return self.reduce(
-            duck_array_ops.cumprod,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
-
+        pass
 
 class DataArrayResampleAggregations:
     _obj: DataArray
 
-    def reduce(
-        self,
-        func: Callable[..., Any],
-        dim: Dims = None,
-        *,
-        axis: int | Sequence[int] | None = None,
-        keep_attrs: bool | None = None,
-        keepdims: bool = False,
-        **kwargs: Any,
-    ) -> DataArray:
-        raise NotImplementedError()
-
-    def _flox_reduce(
-        self,
-        dim: Dims,
-        **kwargs: Any,
-    ) -> DataArray:
-        raise NotImplementedError()
-
-    def count(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def count(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``count`` along some dimension(s).
 
@@ -6760,33 +5304,9 @@ class DataArrayResampleAggregations:
         Coordinates:
           * time     (time) datetime64[ns] 24B 2001-01-31 2001-04-30 2001-07-31
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="count",
-                dim=dim,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.count,
-                dim=dim,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def all(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def all(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``all`` along some dimension(s).
 
@@ -6849,33 +5369,9 @@ class DataArrayResampleAggregations:
         Coordinates:
           * time     (time) datetime64[ns] 24B 2001-01-31 2001-04-30 2001-07-31
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="all",
-                dim=dim,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.array_all,
-                dim=dim,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def any(
-        self,
-        dim: Dims = None,
-        *,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def any(self, dim: Dims=None, *, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``any`` along some dimension(s).
 
@@ -6938,34 +5434,9 @@ class DataArrayResampleAggregations:
         Coordinates:
           * time     (time) datetime64[ns] 24B 2001-01-31 2001-04-30 2001-07-31
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="any",
-                dim=dim,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.array_any,
-                dim=dim,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def max(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def max(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``max`` along some dimension(s).
 
@@ -7041,36 +5512,9 @@ class DataArrayResampleAggregations:
         Coordinates:
           * time     (time) datetime64[ns] 24B 2001-01-31 2001-04-30 2001-07-31
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="max",
-                dim=dim,
-                skipna=skipna,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.max,
-                dim=dim,
-                skipna=skipna,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def min(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def min(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``min`` along some dimension(s).
 
@@ -7146,36 +5590,9 @@ class DataArrayResampleAggregations:
         Coordinates:
           * time     (time) datetime64[ns] 24B 2001-01-31 2001-04-30 2001-07-31
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="min",
-                dim=dim,
-                skipna=skipna,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.min,
-                dim=dim,
-                skipna=skipna,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def mean(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def mean(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``mean`` along some dimension(s).
 
@@ -7253,37 +5670,9 @@ class DataArrayResampleAggregations:
         Coordinates:
           * time     (time) datetime64[ns] 24B 2001-01-31 2001-04-30 2001-07-31
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="mean",
-                dim=dim,
-                skipna=skipna,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.mean,
-                dim=dim,
-                skipna=skipna,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def prod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def prod(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``prod`` along some dimension(s).
 
@@ -7375,39 +5764,9 @@ class DataArrayResampleAggregations:
         Coordinates:
           * time     (time) datetime64[ns] 24B 2001-01-31 2001-04-30 2001-07-31
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="prod",
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.prod,
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def sum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def sum(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``sum`` along some dimension(s).
 
@@ -7499,39 +5858,9 @@ class DataArrayResampleAggregations:
         Coordinates:
           * time     (time) datetime64[ns] 24B 2001-01-31 2001-04-30 2001-07-31
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="sum",
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.sum,
-                dim=dim,
-                skipna=skipna,
-                min_count=min_count,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def std(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def std(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``std`` along some dimension(s).
 
@@ -7620,39 +5949,9 @@ class DataArrayResampleAggregations:
         Coordinates:
           * time     (time) datetime64[ns] 24B 2001-01-31 2001-04-30 2001-07-31
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="std",
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.std,
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def var(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def var(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``var`` along some dimension(s).
 
@@ -7741,38 +6040,9 @@ class DataArrayResampleAggregations:
         Coordinates:
           * time     (time) datetime64[ns] 24B 2001-01-31 2001-04-30 2001-07-31
         """
-        if (
-            flox_available
-            and OPTIONS["use_flox"]
-            and contains_only_chunked_or_numpy(self._obj)
-        ):
-            return self._flox_reduce(
-                func="var",
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                # fill_value=fill_value,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
-        else:
-            return self.reduce(
-                duck_array_ops.var,
-                dim=dim,
-                skipna=skipna,
-                ddof=ddof,
-                keep_attrs=keep_attrs,
-                **kwargs,
-            )
+        pass
 
-    def median(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def median(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``median`` along some dimension(s).
 
@@ -7850,22 +6120,9 @@ class DataArrayResampleAggregations:
         Coordinates:
           * time     (time) datetime64[ns] 24B 2001-01-31 2001-04-30 2001-07-31
         """
-        return self.reduce(
-            duck_array_ops.median,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumsum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def cumsum(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``cumsum`` along some dimension(s).
 
@@ -7945,22 +6202,9 @@ class DataArrayResampleAggregations:
             labels   (time) <U1 24B 'a' 'b' 'c' 'c' 'b' 'a'
         Dimensions without coordinates: time
         """
-        return self.reduce(
-            duck_array_ops.cumsum,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass
 
-    def cumprod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        keep_attrs: bool | None = None,
-        **kwargs: Any,
-    ) -> DataArray:
+    def cumprod(self, dim: Dims=None, *, skipna: bool | None=None, keep_attrs: bool | None=None, **kwargs: Any) -> DataArray:
         """
         Reduce this DataArray's data by applying ``cumprod`` along some dimension(s).
 
@@ -8040,10 +6284,4 @@ class DataArrayResampleAggregations:
             labels   (time) <U1 24B 'a' 'b' 'c' 'c' 'b' 'a'
         Dimensions without coordinates: time
         """
-        return self.reduce(
-            duck_array_ops.cumprod,
-            dim=dim,
-            skipna=skipna,
-            keep_attrs=keep_attrs,
-            **kwargs,
-        )
+        pass

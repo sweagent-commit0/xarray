@@ -1,44 +1,4 @@
-# The StringAccessor class defined below is an adaptation of the
-# pandas string methods source code (see pd.core.strings)
-
-# For reference, here is a copy of the pandas copyright notice:
-
-# (c) 2011-2012, Lambda Foundry, Inc. and PyData Development Team
-# All rights reserved.
-
-# Copyright (c) 2008-2011 AQR Capital Management, LLC
-# All rights reserved.
-
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-
-#     * Redistributions of source code must retain the above copyright
-#        notice, this list of conditions and the following disclaimer.
-
-#     * Redistributions in binary form must reproduce the above
-#        copyright notice, this list of conditions and the following
-#        disclaimer in the documentation and/or other materials provided
-#        with the distribution.
-
-#     * Neither the name of the copyright holder nor the names of any
-#        contributors may be used to endorse or promote products derived
-#        from this software without specific prior written permission.
-
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 from __future__ import annotations
-
 import codecs
 import re
 import textwrap
@@ -48,100 +8,34 @@ from operator import or_ as set_union
 from re import Pattern
 from typing import TYPE_CHECKING, Any, Callable, Generic
 from unicodedata import normalize
-
 import numpy as np
-
 from xarray.core import duck_array_ops
 from xarray.core.computation import apply_ufunc
 from xarray.core.types import T_DataArray
-
 if TYPE_CHECKING:
     from numpy.typing import DTypeLike
-
     from xarray.core.dataarray import DataArray
-
-_cpython_optimized_encoders = (
-    "utf-8",
-    "utf8",
-    "latin-1",
-    "latin1",
-    "iso-8859-1",
-    "mbcs",
-    "ascii",
-)
-_cpython_optimized_decoders = _cpython_optimized_encoders + ("utf-16", "utf-32")
-
+_cpython_optimized_encoders = ('utf-8', 'utf8', 'latin-1', 'latin1', 'iso-8859-1', 'mbcs', 'ascii')
+_cpython_optimized_decoders = _cpython_optimized_encoders + ('utf-16', 'utf-32')
 
 def _contains_obj_type(*, pat: Any, checker: Any) -> bool:
     """Determine if the object fits some rule or is array of objects that do so."""
-    if isinstance(checker, type):
-        targtype = checker
-        checker = lambda x: isinstance(x, targtype)
-
-    if checker(pat):
-        return True
-
-    # If it is not an object array it can't contain compiled re
-    if getattr(pat, "dtype", "no") != np.object_:
-        return False
-
-    return _apply_str_ufunc(func=checker, obj=pat).all()
-
+    pass
 
 def _contains_str_like(pat: Any) -> bool:
     """Determine if the object is a str-like or array of str-like."""
-    if isinstance(pat, (str, bytes)):
-        return True
-
-    if not hasattr(pat, "dtype"):
-        return False
-
-    return pat.dtype.kind in ["U", "S"]
-
+    pass
 
 def _contains_compiled_re(pat: Any) -> bool:
     """Determine if the object is a compiled re or array of compiled re."""
-    return _contains_obj_type(pat=pat, checker=re.Pattern)
-
+    pass
 
 def _contains_callable(pat: Any) -> bool:
     """Determine if the object is a callable or array of callables."""
-    return _contains_obj_type(pat=pat, checker=callable)
-
-
-def _apply_str_ufunc(
-    *,
-    func: Callable,
-    obj: Any,
-    dtype: DTypeLike = None,
-    output_core_dims: list | tuple = ((),),
-    output_sizes: Mapping[Any, int] | None = None,
-    func_args: tuple = (),
-    func_kwargs: Mapping = {},
-) -> Any:
-    # TODO handling of na values ?
-    if dtype is None:
-        dtype = obj.dtype
-
-    dask_gufunc_kwargs = dict()
-    if output_sizes is not None:
-        dask_gufunc_kwargs["output_sizes"] = output_sizes
-
-    return apply_ufunc(
-        func,
-        obj,
-        *func_args,
-        vectorize=True,
-        dask="parallelized",
-        output_dtypes=[dtype],
-        output_core_dims=output_core_dims,
-        dask_gufunc_kwargs=dask_gufunc_kwargs,
-        **func_kwargs,
-    )
-
+    pass
 
 class StringAccessor(Generic[T_DataArray]):
-    r"""Vectorized string functions for string-like arrays.
+    """Vectorized string functions for string-like arrays.
 
     Similar to pandas, fields can be accessed through the `.str` attribute
     for applicable DataArrays.
@@ -198,12 +92,11 @@ class StringAccessor(Generic[T_DataArray]):
             >>> da2 = xr.DataArray([1, 2, 3], dims=["Y"])
             >>> da1 % {"a": da2}
             <xarray.DataArray (X: 1)> Size: 8B
-            array(['<xarray.DataArray (Y: 3)> Size: 24B\narray([1, 2, 3])\nDimensions without coordinates: Y'],
+            array(['<xarray.DataArray (Y: 3)> Size: 24B\\narray([1, 2, 3])\\nDimensions without coordinates: Y'],
                   dtype=object)
             Dimensions without coordinates: X
     """
-
-    __slots__ = ("_obj",)
+    __slots__ = ('_obj',)
 
     def __init__(self, obj: T_DataArray) -> None:
         self._obj = obj
@@ -214,70 +107,7 @@ class StringAccessor(Generic[T_DataArray]):
 
         This is mostly here to tell mypy a pattern is a str/bytes not a re.Pattern.
         """
-        if hasattr(invar, "astype"):
-            return invar.astype(self._obj.dtype.kind)
-        else:
-            return self._obj.dtype.type(invar)
-
-    def _apply(
-        self,
-        *,
-        func: Callable,
-        dtype: DTypeLike = None,
-        output_core_dims: list | tuple = ((),),
-        output_sizes: Mapping[Any, int] | None = None,
-        func_args: tuple = (),
-        func_kwargs: Mapping = {},
-    ) -> T_DataArray:
-        return _apply_str_ufunc(
-            obj=self._obj,
-            func=func,
-            dtype=dtype,
-            output_core_dims=output_core_dims,
-            output_sizes=output_sizes,
-            func_args=func_args,
-            func_kwargs=func_kwargs,
-        )
-
-    def _re_compile(
-        self,
-        *,
-        pat: str | bytes | Pattern | Any,
-        flags: int = 0,
-        case: bool | None = None,
-    ) -> Pattern | Any:
-        is_compiled_re = isinstance(pat, re.Pattern)
-
-        if is_compiled_re and flags != 0:
-            raise ValueError("Flags cannot be set when pat is a compiled regex.")
-
-        if is_compiled_re and case is not None:
-            raise ValueError("Case cannot be set when pat is a compiled regex.")
-
-        if is_compiled_re:
-            # no-op, needed to tell mypy this isn't a string
-            return re.compile(pat)
-
-        if case is None:
-            case = True
-
-        # The case is handled by the re flags internally.
-        # Add it to the flags if necessary.
-        if not case:
-            flags |= re.IGNORECASE
-
-        if getattr(pat, "dtype", None) != np.object_:
-            pat = self._stringify(pat)
-
-        def func(x):
-            return re.compile(x, flags=flags)
-
-        if isinstance(pat, np.ndarray):
-            # apply_ufunc doesn't work for numpy arrays with output object dtypes
-            func_ = np.vectorize(func)
-            return func_(pat)
-        else:
-            return _apply_str_ufunc(func=func, obj=pat, dtype=np.object_)
+        pass
 
     def len(self) -> T_DataArray:
         """
@@ -287,44 +117,31 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         lengths array : array of int
         """
-        return self._apply(func=len, dtype=int)
+        pass
 
-    def __getitem__(
-        self,
-        key: int | slice,
-    ) -> T_DataArray:
+    def __getitem__(self, key: int | slice) -> T_DataArray:
         if isinstance(key, slice):
             return self.slice(start=key.start, stop=key.stop, step=key.step)
         else:
             return self.get(key)
 
     def __add__(self, other: Any) -> T_DataArray:
-        return self.cat(other, sep="")
+        return self.cat(other, sep='')
 
-    def __mul__(
-        self,
-        num: int | Any,
-    ) -> T_DataArray:
+    def __mul__(self, num: int | Any) -> T_DataArray:
         return self.repeat(num)
 
-    def __mod__(
-        self,
-        other: Any,
-    ) -> T_DataArray:
+    def __mod__(self, other: Any) -> T_DataArray:
         if isinstance(other, dict):
             other = {key: self._stringify(val) for key, val in other.items()}
             return self._apply(func=lambda x: x % other)
         elif isinstance(other, tuple):
-            other = tuple(self._stringify(x) for x in other)
+            other = tuple((self._stringify(x) for x in other))
             return self._apply(func=lambda x, *y: x % y, func_args=other)
         else:
             return self._apply(func=lambda x, y: x % y, func_args=(other,))
 
-    def get(
-        self,
-        i: int | Any,
-        default: str | bytes = "",
-    ) -> T_DataArray:
+    def get(self, i: int | Any, default: str | bytes='') -> T_DataArray:
         """
         Extract character number `i` from each string in the array.
 
@@ -343,21 +160,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         items : array of object
         """
+        pass
 
-        def f(x, iind):
-            islice = slice(-1, None) if iind == -1 else slice(iind, iind + 1)
-            item = x[islice]
-
-            return item if item else default
-
-        return self._apply(func=f, func_args=(i,))
-
-    def slice(
-        self,
-        start: int | Any | None = None,
-        stop: int | Any | None = None,
-        step: int | Any | None = None,
-    ) -> T_DataArray:
+    def slice(self, start: int | Any | None=None, stop: int | Any | None=None, step: int | Any | None=None) -> T_DataArray:
         """
         Slice substrings from each string in the array.
 
@@ -380,15 +185,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         sliced strings : same type as values
         """
-        f = lambda x, istart, istop, istep: x[slice(istart, istop, istep)]
-        return self._apply(func=f, func_args=(start, stop, step))
+        pass
 
-    def slice_replace(
-        self,
-        start: int | Any | None = None,
-        stop: int | Any | None = None,
-        repl: str | bytes | Any = "",
-    ) -> T_DataArray:
+    def slice_replace(self, start: int | Any | None=None, stop: int | Any | None=None, repl: str | bytes | Any='') -> T_DataArray:
         """
         Replace a positional slice of a string with another value.
 
@@ -413,24 +212,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         replaced : same type as values
         """
-        repl = self._stringify(repl)
+        pass
 
-        def func(x, istart, istop, irepl):
-            if len(x[istart:istop]) == 0:
-                local_stop = istart
-            else:
-                local_stop = istop
-            y = self._stringify("")
-            if istart is not None:
-                y += x[:istart]
-            y += irepl
-            if istop is not None:
-                y += x[local_stop:]
-            return y
-
-        return self._apply(func=func, func_args=(start, stop, repl))
-
-    def cat(self, *others, sep: str | bytes | Any = "") -> T_DataArray:
+    def cat(self, *others, sep: str | bytes | Any='') -> T_DataArray:
         """
         Concatenate strings elementwise in the DataArray with other strings.
 
@@ -498,24 +282,9 @@ class StringAccessor(Generic[T_DataArray]):
         pandas.Series.str.cat
         str.join
         """
-        sep = self._stringify(sep)
-        others = tuple(self._stringify(x) for x in others)
-        others = others + (sep,)
+        pass
 
-        # sep will go at the end of the input arguments.
-        func = lambda *x: x[-1].join(x[:-1])
-
-        return self._apply(
-            func=func,
-            func_args=others,
-            dtype=self._obj.dtype.kind,
-        )
-
-    def join(
-        self,
-        dim: Hashable = None,
-        sep: str | bytes | Any = "",
-    ) -> T_DataArray:
+    def join(self, dim: Hashable=None, sep: str | bytes | Any='') -> T_DataArray:
         """
         Concatenate strings in a DataArray along a particular dimension.
 
@@ -566,27 +335,9 @@ class StringAccessor(Generic[T_DataArray]):
         pandas.Series.str.join
         str.join
         """
-        if self._obj.ndim > 1 and dim is None:
-            raise ValueError("Dimension must be specified for multidimensional arrays.")
+        pass
 
-        if self._obj.ndim > 1:
-            # Move the target dimension to the start and split along it
-            dimshifted = list(self._obj.transpose(dim, ...))
-        elif self._obj.ndim == 1:
-            dimshifted = list(self._obj)
-        else:
-            dimshifted = [self._obj]
-
-        start, *others = dimshifted
-
-        # concatenate the resulting arrays
-        return start.str.cat(*others, sep=sep)
-
-    def format(
-        self,
-        *args: Any,
-        **kwargs: Any,
-    ) -> T_DataArray:
+    def format(self, *args: Any, **kwargs: Any) -> T_DataArray:
         """
         Perform python string formatting on each element of the DataArray.
 
@@ -659,12 +410,7 @@ class StringAccessor(Generic[T_DataArray]):
         --------
         str.format
         """
-        args = tuple(self._stringify(x) for x in args)
-        kwargs = {key: self._stringify(val) for key, val in kwargs.items()}
-        func = lambda x, *args, **kwargs: self._obj.dtype.type.format(
-            x, *args, **kwargs
-        )
-        return self._apply(func=func, func_args=args, func_kwargs={"kwargs": kwargs})
+        pass
 
     def capitalize(self) -> T_DataArray:
         """
@@ -691,7 +437,7 @@ class StringAccessor(Generic[T_DataArray]):
               dtype='<U14')
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.capitalize())
+        pass
 
     def lower(self) -> T_DataArray:
         """
@@ -714,7 +460,7 @@ class StringAccessor(Generic[T_DataArray]):
         array(['temperature', 'pressure'], dtype='<U11')
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.lower())
+        pass
 
     def swapcase(self) -> T_DataArray:
         """
@@ -738,7 +484,7 @@ class StringAccessor(Generic[T_DataArray]):
         array(['TEMPERATURE', 'pressure', 'hUmIdItY'], dtype='<U11')
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.swapcase())
+        pass
 
     def title(self) -> T_DataArray:
         """
@@ -761,7 +507,7 @@ class StringAccessor(Generic[T_DataArray]):
         array(['Temperature', 'Pressure', 'Humidity'], dtype='<U11')
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.title())
+        pass
 
     def upper(self) -> T_DataArray:
         """
@@ -784,7 +530,7 @@ class StringAccessor(Generic[T_DataArray]):
         array(['TEMPERATURE', 'HUMIDITY'], dtype='<U11')
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.upper())
+        pass
 
     def casefold(self) -> T_DataArray:
         """
@@ -825,12 +571,9 @@ class StringAccessor(Generic[T_DataArray]):
         array(['ss', 'i̇'], dtype='<U2')
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.casefold())
+        pass
 
-    def normalize(
-        self,
-        form: str,
-    ) -> T_DataArray:
+    def normalize(self, form: str) -> T_DataArray:
         """
         Return the Unicode normal form for the strings in the datarray.
 
@@ -847,7 +590,7 @@ class StringAccessor(Generic[T_DataArray]):
         normalized : same type as values
 
         """
-        return self._apply(func=lambda x: normalize(form, x))
+        pass
 
     def isalnum(self) -> T_DataArray:
         """
@@ -871,7 +614,7 @@ class StringAccessor(Generic[T_DataArray]):
         array([ True, False])
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.isalnum(), dtype=bool)
+        pass
 
     def isalpha(self) -> T_DataArray:
         """
@@ -895,7 +638,7 @@ class StringAccessor(Generic[T_DataArray]):
         array([ True, False, False])
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.isalpha(), dtype=bool)
+        pass
 
     def isdecimal(self) -> T_DataArray:
         """
@@ -919,7 +662,7 @@ class StringAccessor(Generic[T_DataArray]):
         array([False,  True,  True])
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.isdecimal(), dtype=bool)
+        pass
 
     def isdigit(self) -> T_DataArray:
         """
@@ -943,7 +686,7 @@ class StringAccessor(Generic[T_DataArray]):
         array([ True, False,  True, False, False])
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.isdigit(), dtype=bool)
+        pass
 
     def islower(self) -> T_DataArray:
         """
@@ -968,7 +711,7 @@ class StringAccessor(Generic[T_DataArray]):
         array([ True, False, False])
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.islower(), dtype=bool)
+        pass
 
     def isnumeric(self) -> T_DataArray:
         """
@@ -992,7 +735,7 @@ class StringAccessor(Generic[T_DataArray]):
         array([ True, False, False, False, False])
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.isnumeric(), dtype=bool)
+        pass
 
     def isspace(self) -> T_DataArray:
         """
@@ -1016,7 +759,7 @@ class StringAccessor(Generic[T_DataArray]):
         array([False,  True,  True,  True])
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.isspace(), dtype=bool)
+        pass
 
     def istitle(self) -> T_DataArray:
         """
@@ -1048,7 +791,7 @@ class StringAccessor(Generic[T_DataArray]):
         array([ True, False, False])
         Dimensions without coordinates: title
         """
-        return self._apply(func=lambda x: x.istitle(), dtype=bool)
+        pass
 
     def isupper(self) -> T_DataArray:
         """
@@ -1072,11 +815,9 @@ class StringAccessor(Generic[T_DataArray]):
         array([ True, False, False])
         Dimensions without coordinates: x
         """
-        return self._apply(func=lambda x: x.isupper(), dtype=bool)
+        pass
 
-    def count(
-        self, pat: str | bytes | Pattern | Any, flags: int = 0, case: bool | None = None
-    ) -> T_DataArray:
+    def count(self, pat: str | bytes | Pattern | Any, flags: int=0, case: bool | None=None) -> T_DataArray:
         """
         Count occurrences of pattern in each string of the array.
 
@@ -1147,10 +888,7 @@ class StringAccessor(Generic[T_DataArray]):
                [0, 1]])
         Dimensions without coordinates: x, y
         """
-        pat = self._re_compile(pat=pat, flags=flags, case=case)
-
-        func = lambda x, ipat: len(ipat.findall(x))
-        return self._apply(func=func, func_args=(pat,), dtype=int)
+        pass
 
     def startswith(self, pat: str | bytes | Any) -> T_DataArray:
         """
@@ -1184,9 +922,7 @@ class StringAccessor(Generic[T_DataArray]):
         array([ True, False, False])
         Dimensions without coordinates: x
         """
-        pat = self._stringify(pat)
-        func = lambda x, y: x.startswith(y)
-        return self._apply(func=func, func_args=(pat,), dtype=bool)
+        pass
 
     def endswith(self, pat: str | bytes | Any) -> T_DataArray:
         """
@@ -1220,16 +956,9 @@ class StringAccessor(Generic[T_DataArray]):
         array([ True, False, False])
         Dimensions without coordinates: x
         """
-        pat = self._stringify(pat)
-        func = lambda x, y: x.endswith(y)
-        return self._apply(func=func, func_args=(pat,), dtype=bool)
+        pass
 
-    def pad(
-        self,
-        width: int | Any,
-        side: str = "left",
-        fillchar: str | bytes | Any = " ",
-    ) -> T_DataArray:
+    def pad(self, width: int | Any, side: str='left', fillchar: str | bytes | Any=' ') -> T_DataArray:
         """
         Pad strings in the array up to width.
 
@@ -1313,39 +1042,15 @@ class StringAccessor(Generic[T_DataArray]):
                ['0000NZ39', '----NZ39']], dtype='<U8')
         Dimensions without coordinates: x, y
         """
-        if side == "left":
-            func = self.rjust
-        elif side == "right":
-            func = self.ljust
-        elif side == "both":
-            func = self.center
-        else:  # pragma: no cover
-            raise ValueError("Invalid side")
+        pass
 
-        return func(width=width, fillchar=fillchar)
-
-    def _padder(
-        self,
-        *,
-        func: Callable,
-        width: int | Any,
-        fillchar: str | bytes | Any = " ",
-    ) -> T_DataArray:
+    def _padder(self, *, func: Callable, width: int | Any, fillchar: str | bytes | Any=' ') -> T_DataArray:
         """
         Wrapper function to handle padding operations
         """
-        fillchar = self._stringify(fillchar)
+        pass
 
-        def overfunc(x, iwidth, ifillchar):
-            if len(ifillchar) != 1:
-                raise TypeError("fillchar must be a character, not str")
-            return func(x, int(iwidth), ifillchar)
-
-        return self._apply(func=overfunc, func_args=(width, fillchar))
-
-    def center(
-        self, width: int | Any, fillchar: str | bytes | Any = " "
-    ) -> T_DataArray:
+    def center(self, width: int | Any, fillchar: str | bytes | Any=' ') -> T_DataArray:
         """
         Pad left and right side of each string in the array.
 
@@ -1365,14 +1070,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         filled : same type as values
         """
-        func = self._obj.dtype.type.center
-        return self._padder(func=func, width=width, fillchar=fillchar)
+        pass
 
-    def ljust(
-        self,
-        width: int | Any,
-        fillchar: str | bytes | Any = " ",
-    ) -> T_DataArray:
+    def ljust(self, width: int | Any, fillchar: str | bytes | Any=' ') -> T_DataArray:
         """
         Pad right side of each string in the array.
 
@@ -1392,14 +1092,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         filled : same type as values
         """
-        func = self._obj.dtype.type.ljust
-        return self._padder(func=func, width=width, fillchar=fillchar)
+        pass
 
-    def rjust(
-        self,
-        width: int | Any,
-        fillchar: str | bytes | Any = " ",
-    ) -> T_DataArray:
+    def rjust(self, width: int | Any, fillchar: str | bytes | Any=' ') -> T_DataArray:
         """
         Pad left side of each string in the array.
 
@@ -1419,8 +1114,7 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         filled : same type as values
         """
-        func = self._obj.dtype.type.rjust
-        return self._padder(func=func, width=width, fillchar=fillchar)
+        pass
 
     def zfill(self, width: int | Any) -> T_DataArray:
         """
@@ -1443,15 +1137,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         filled : same type as values
         """
-        return self.rjust(width, fillchar="0")
+        pass
 
-    def contains(
-        self,
-        pat: str | bytes | Pattern | Any,
-        case: bool | None = None,
-        flags: int = 0,
-        regex: bool = True,
-    ) -> T_DataArray:
+    def contains(self, pat: str | bytes | Pattern | Any, case: bool | None=None, flags: int=0, regex: bool=True) -> T_DataArray:
         """
         Test if pattern or regex is contained within each string of the array.
 
@@ -1488,42 +1176,9 @@ class StringAccessor(Generic[T_DataArray]):
             given pattern is contained within the string of each element
             of the array.
         """
-        is_compiled_re = _contains_compiled_re(pat)
-        if is_compiled_re and not regex:
-            raise ValueError(
-                "Must use regular expression matching for regular expression object."
-            )
+        pass
 
-        if regex:
-            if not is_compiled_re:
-                pat = self._re_compile(pat=pat, flags=flags, case=case)
-
-            def func(x, ipat):
-                if ipat.groups > 0:  # pragma: no cover
-                    raise ValueError("This pattern has match groups.")
-                return bool(ipat.search(x))
-
-        else:
-            pat = self._stringify(pat)
-            if case or case is None:
-                func = lambda x, ipat: ipat in x
-            elif self._obj.dtype.char == "U":
-                uppered = self.casefold()
-                uppat = StringAccessor(pat).casefold()  # type: ignore[type-var]  # hack?
-                return uppered.str.contains(uppat, regex=False)  # type: ignore[return-value]
-            else:
-                uppered = self.upper()
-                uppat = StringAccessor(pat).upper()  # type: ignore[type-var]  # hack?
-                return uppered.str.contains(uppat, regex=False)  # type: ignore[return-value]
-
-        return self._apply(func=func, func_args=(pat,), dtype=bool)
-
-    def match(
-        self,
-        pat: str | bytes | Pattern | Any,
-        case: bool | None = None,
-        flags: int = 0,
-    ) -> T_DataArray:
+    def match(self, pat: str | bytes | Pattern | Any, case: bool | None=None, flags: int=0) -> T_DataArray:
         """
         Determine if each string in the array matches a regular expression.
 
@@ -1550,14 +1205,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         matched : array of bool
         """
-        pat = self._re_compile(pat=pat, flags=flags, case=case)
+        pass
 
-        func = lambda x, ipat: bool(ipat.match(x))
-        return self._apply(func=func, func_args=(pat,), dtype=bool)
-
-    def strip(
-        self, to_strip: str | bytes | Any = None, side: str = "both"
-    ) -> T_DataArray:
+    def strip(self, to_strip: str | bytes | Any=None, side: str='both') -> T_DataArray:
         """
         Remove leading and trailing characters.
 
@@ -1580,21 +1230,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         stripped : same type as values
         """
-        if to_strip is not None:
-            to_strip = self._stringify(to_strip)
+        pass
 
-        if side == "both":
-            func = lambda x, y: x.strip(y)
-        elif side == "left":
-            func = lambda x, y: x.lstrip(y)
-        elif side == "right":
-            func = lambda x, y: x.rstrip(y)
-        else:  # pragma: no cover
-            raise ValueError("Invalid side")
-
-        return self._apply(func=func, func_args=(to_strip,))
-
-    def lstrip(self, to_strip: str | bytes | Any = None) -> T_DataArray:
+    def lstrip(self, to_strip: str | bytes | Any=None) -> T_DataArray:
         """
         Remove leading characters.
 
@@ -1615,9 +1253,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         stripped : same type as values
         """
-        return self.strip(to_strip, side="left")
+        pass
 
-    def rstrip(self, to_strip: str | bytes | Any = None) -> T_DataArray:
+    def rstrip(self, to_strip: str | bytes | Any=None) -> T_DataArray:
         """
         Remove trailing characters.
 
@@ -1638,7 +1276,7 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         stripped : same type as values
         """
-        return self.strip(to_strip, side="right")
+        pass
 
     def wrap(self, width: int | Any, **kwargs) -> T_DataArray:
         """
@@ -1662,12 +1300,8 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         wrapped : same type as values
         """
-        ifunc = lambda x: textwrap.TextWrapper(width=x, **kwargs)
-        tw = StringAccessor(width)._apply(func=ifunc, dtype=np.object_)  # type: ignore[type-var]  # hack?
-        func = lambda x, itw: "\n".join(itw.wrap(x))
-        return self._apply(func=func, func_args=(tw,))
+        pass
 
-    # Mapping is only covariant in its values, maybe use a custom CovariantMapping?
     def translate(self, table: Mapping[Any, str | bytes | int | None]) -> T_DataArray:
         """
         Map characters of each string through the given mapping table.
@@ -1684,13 +1318,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         translated : same type as values
         """
-        func = lambda x: x.translate(table)
-        return self._apply(func=func)
+        pass
 
-    def repeat(
-        self,
-        repeats: int | Any,
-    ) -> T_DataArray:
+    def repeat(self, repeats: int | Any) -> T_DataArray:
         """
         Repeat each string in the array.
 
@@ -1708,16 +1338,9 @@ class StringAccessor(Generic[T_DataArray]):
         repeated : same type as values
             Array of repeated string objects.
         """
-        func = lambda x, y: x * y
-        return self._apply(func=func, func_args=(repeats,))
+        pass
 
-    def find(
-        self,
-        sub: str | bytes | Any,
-        start: int | Any = 0,
-        end: int | Any = None,
-        side: str = "left",
-    ) -> T_DataArray:
+    def find(self, sub: str | bytes | Any, start: int | Any=0, end: int | Any=None, side: str='left') -> T_DataArray:
         """
         Return lowest or highest indexes in each strings in the array
         where the substring is fully contained between [start:end].
@@ -1744,24 +1367,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         found : array of int
         """
-        sub = self._stringify(sub)
+        pass
 
-        if side == "left":
-            method = "find"
-        elif side == "right":
-            method = "rfind"
-        else:  # pragma: no cover
-            raise ValueError("Invalid side")
-
-        func = lambda x, isub, istart, iend: getattr(x, method)(isub, istart, iend)
-        return self._apply(func=func, func_args=(sub, start, end), dtype=int)
-
-    def rfind(
-        self,
-        sub: str | bytes | Any,
-        start: int | Any = 0,
-        end: int | Any = None,
-    ) -> T_DataArray:
+    def rfind(self, sub: str | bytes | Any, start: int | Any=0, end: int | Any=None) -> T_DataArray:
         """
         Return highest indexes in each strings in the array
         where the substring is fully contained between [start:end].
@@ -1786,15 +1394,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         found : array of int
         """
-        return self.find(sub, start=start, end=end, side="right")
+        pass
 
-    def index(
-        self,
-        sub: str | bytes | Any,
-        start: int | Any = 0,
-        end: int | Any = None,
-        side: str = "left",
-    ) -> T_DataArray:
+    def index(self, sub: str | bytes | Any, start: int | Any=0, end: int | Any=None, side: str='left') -> T_DataArray:
         """
         Return lowest or highest indexes in each strings where the substring is
         fully contained between [start:end]. This is the same as
@@ -1827,24 +1429,9 @@ class StringAccessor(Generic[T_DataArray]):
         ValueError
             substring is not found
         """
-        sub = self._stringify(sub)
+        pass
 
-        if side == "left":
-            method = "index"
-        elif side == "right":
-            method = "rindex"
-        else:  # pragma: no cover
-            raise ValueError("Invalid side")
-
-        func = lambda x, isub, istart, iend: getattr(x, method)(isub, istart, iend)
-        return self._apply(func=func, func_args=(sub, start, end), dtype=int)
-
-    def rindex(
-        self,
-        sub: str | bytes | Any,
-        start: int | Any = 0,
-        end: int | Any = None,
-    ) -> T_DataArray:
+    def rindex(self, sub: str | bytes | Any, start: int | Any=0, end: int | Any=None) -> T_DataArray:
         """
         Return highest indexes in each strings where the substring is
         fully contained between [start:end]. This is the same as
@@ -1875,17 +1462,9 @@ class StringAccessor(Generic[T_DataArray]):
         ValueError
             substring is not found
         """
-        return self.index(sub, start=start, end=end, side="right")
+        pass
 
-    def replace(
-        self,
-        pat: str | bytes | Pattern | Any,
-        repl: str | bytes | Callable | Any,
-        n: int | Any = -1,
-        case: bool | None = None,
-        flags: int = 0,
-        regex: bool = True,
-    ) -> T_DataArray:
+    def replace(self, pat: str | bytes | Pattern | Any, repl: str | bytes | Callable | Any, n: int | Any=-1, case: bool | None=None, flags: int=0, regex: bool=True) -> T_DataArray:
         """
         Replace occurrences of pattern/regex in the array with some string.
 
@@ -1926,38 +1505,10 @@ class StringAccessor(Generic[T_DataArray]):
             A copy of the object with all matching occurrences of `pat`
             replaced by `repl`.
         """
-        if _contains_str_like(repl):
-            repl = self._stringify(repl)
-        elif not _contains_callable(repl):  # pragma: no cover
-            raise TypeError("repl must be a string or callable")
+        pass
 
-        is_compiled_re = _contains_compiled_re(pat)
-        if not regex and is_compiled_re:
-            raise ValueError(
-                "Cannot use a compiled regex as replacement pattern with regex=False"
-            )
-
-        if not regex and callable(repl):
-            raise ValueError("Cannot use a callable replacement when regex=False")
-
-        if regex:
-            pat = self._re_compile(pat=pat, flags=flags, case=case)
-            func = lambda x, ipat, irepl, i_n: ipat.sub(
-                repl=irepl, string=x, count=i_n if i_n >= 0 else 0
-            )
-        else:
-            pat = self._stringify(pat)
-            func = lambda x, ipat, irepl, i_n: x.replace(ipat, irepl, i_n)
-        return self._apply(func=func, func_args=(pat, repl, n))
-
-    def extract(
-        self,
-        pat: str | bytes | Pattern | Any,
-        dim: Hashable,
-        case: bool | None = None,
-        flags: int = 0,
-    ) -> T_DataArray:
-        r"""
+    def extract(self, pat: str | bytes | Pattern | Any, dim: Hashable, case: bool | None=None, flags: int=0) -> T_DataArray:
+        """
         Extract the first match of capture groups in the regex pat as a new
         dimension in a DataArray.
 
@@ -2023,7 +1574,7 @@ class StringAccessor(Generic[T_DataArray]):
 
         Extract matches
 
-        >>> value.str.extract(r"(\w+)_Xy_(\d*)", dim="match")
+        >>> value.str.extract(r"(\\w+)_Xy_(\\d*)", dim="match")
         <xarray.DataArray (X: 2, Y: 3, match: 2)> Size: 288B
         array([[['a', '0'],
                 ['bab', '110'],
@@ -2042,70 +1593,10 @@ class StringAccessor(Generic[T_DataArray]):
         re.search
         pandas.Series.str.extract
         """
-        pat = self._re_compile(pat=pat, flags=flags, case=case)
+        pass
 
-        if isinstance(pat, re.Pattern):
-            maxgroups = pat.groups
-        else:
-            maxgroups = (
-                _apply_str_ufunc(obj=pat, func=lambda x: x.groups, dtype=np.int_)
-                .max()
-                .data.tolist()
-            )
-
-        if maxgroups == 0:
-            raise ValueError("No capture groups found in pattern.")
-
-        if dim is None and maxgroups != 1:
-            raise ValueError(
-                "Dimension must be specified if more than one capture group is given."
-            )
-
-        if dim is not None and dim in self._obj.dims:
-            raise KeyError(f"Dimension '{dim}' already present in DataArray.")
-
-        def _get_res_single(val, pat):
-            match = pat.search(val)
-            if match is None:
-                return ""
-            res = match.group(1)
-            if res is None:
-                res = ""
-            return res
-
-        def _get_res_multi(val, pat):
-            match = pat.search(val)
-            if match is None:
-                return np.array([""], val.dtype)
-            match = match.groups()
-            match = [grp if grp is not None else "" for grp in match]
-            return np.array(match, val.dtype)
-
-        if dim is None:
-            return self._apply(func=_get_res_single, func_args=(pat,))
-        else:
-            # dtype MUST be object or strings can be truncated
-            # See: https://github.com/numpy/numpy/issues/8352
-            return duck_array_ops.astype(
-                self._apply(
-                    func=_get_res_multi,
-                    func_args=(pat,),
-                    dtype=np.object_,
-                    output_core_dims=[[dim]],
-                    output_sizes={dim: maxgroups},
-                ),
-                self._obj.dtype.kind,
-            )
-
-    def extractall(
-        self,
-        pat: str | bytes | Pattern | Any,
-        group_dim: Hashable,
-        match_dim: Hashable,
-        case: bool | None = None,
-        flags: int = 0,
-    ) -> T_DataArray:
-        r"""
+    def extractall(self, pat: str | bytes | Pattern | Any, group_dim: Hashable, match_dim: Hashable, case: bool | None=None, flags: int=0) -> T_DataArray:
+        """
         Extract all matches of capture groups in the regex pat as new
         dimensions in a DataArray.
 
@@ -2176,7 +1667,7 @@ class StringAccessor(Generic[T_DataArray]):
         Extract matches
 
         >>> value.str.extractall(
-        ...     r"(\w+)_Xy_(\d*)", group_dim="group", match_dim="match"
+        ...     r"(\\w+)_Xy_(\\d*)", group_dim="group", match_dim="match"
         ... )
         <xarray.DataArray (X: 2, Y: 3, group: 3, match: 2)> Size: 1kB
         array([[[['a', '0'],
@@ -2213,75 +1704,10 @@ class StringAccessor(Generic[T_DataArray]):
         re.findall
         pandas.Series.str.extractall
         """
-        pat = self._re_compile(pat=pat, flags=flags, case=case)
+        pass
 
-        if group_dim in self._obj.dims:
-            raise KeyError(
-                f"Group dimension '{group_dim}' already present in DataArray."
-            )
-
-        if match_dim in self._obj.dims:
-            raise KeyError(
-                f"Match dimension '{match_dim}' already present in DataArray."
-            )
-
-        if group_dim == match_dim:
-            raise KeyError(
-                f"Group dimension '{group_dim}' is the same as match dimension '{match_dim}'."
-            )
-
-        _get_count = lambda x, ipat: len(ipat.findall(x))
-        maxcount = (
-            self._apply(func=_get_count, func_args=(pat,), dtype=np.int_)
-            .max()
-            .data.tolist()
-        )
-
-        if isinstance(pat, re.Pattern):
-            maxgroups = pat.groups
-        else:
-            maxgroups = (
-                _apply_str_ufunc(obj=pat, func=lambda x: x.groups, dtype=np.int_)
-                .max()
-                .data.tolist()
-            )
-
-        def _get_res(val, ipat, imaxcount=maxcount, dtype=self._obj.dtype):
-            if ipat.groups == 0:
-                raise ValueError("No capture groups found in pattern.")
-            matches = ipat.findall(val)
-            res = np.zeros([maxcount, ipat.groups], dtype)
-
-            if ipat.groups == 1:
-                for imatch, match in enumerate(matches):
-                    res[imatch, 0] = match
-            else:
-                for imatch, match in enumerate(matches):
-                    for jmatch, submatch in enumerate(match):
-                        res[imatch, jmatch] = submatch
-
-            return res
-
-        return duck_array_ops.astype(
-            self._apply(
-                # dtype MUST be object or strings can be truncated
-                # See: https://github.com/numpy/numpy/issues/8352
-                func=_get_res,
-                func_args=(pat,),
-                dtype=np.object_,
-                output_core_dims=[[group_dim, match_dim]],
-                output_sizes={group_dim: maxgroups, match_dim: maxcount},
-            ),
-            self._obj.dtype.kind,
-        )
-
-    def findall(
-        self,
-        pat: str | bytes | Pattern | Any,
-        case: bool | None = None,
-        flags: int = 0,
-    ) -> T_DataArray:
-        r"""
+    def findall(self, pat: str | bytes | Pattern | Any, case: bool | None=None, flags: int=0) -> T_DataArray:
+        """
         Find all occurrences of pattern or regular expression in the DataArray.
 
         Equivalent to applying re.findall() to all the elements in the DataArray.
@@ -2341,7 +1767,7 @@ class StringAccessor(Generic[T_DataArray]):
 
         Extract matches
 
-        >>> value.str.findall(r"(\w+)_Xy_(\d*)")
+        >>> value.str.findall(r"(\\w+)_Xy_(\\d*)")
         <xarray.DataArray (X: 2, Y: 3)> Size: 48B
         array([[list([('a', '0')]), list([('bab', '110'), ('baab', '1100')]),
                 list([('abc', '01'), ('cbc', '2210')])],
@@ -2358,56 +1784,15 @@ class StringAccessor(Generic[T_DataArray]):
         re.findall
         pandas.Series.str.findall
         """
-        pat = self._re_compile(pat=pat, flags=flags, case=case)
+        pass
 
-        def func(x, ipat):
-            if ipat.groups == 0:
-                raise ValueError("No capture groups found in pattern.")
-
-            return ipat.findall(x)
-
-        return self._apply(func=func, func_args=(pat,), dtype=np.object_)
-
-    def _partitioner(
-        self,
-        *,
-        func: Callable,
-        dim: Hashable | None,
-        sep: str | bytes | Any | None,
-    ) -> T_DataArray:
+    def _partitioner(self, *, func: Callable, dim: Hashable | None, sep: str | bytes | Any | None) -> T_DataArray:
         """
         Implements logic for `partition` and `rpartition`.
         """
-        sep = self._stringify(sep)
+        pass
 
-        if dim is None:
-            listfunc = lambda x, isep: list(func(x, isep))
-            return self._apply(func=listfunc, func_args=(sep,), dtype=np.object_)
-
-        # _apply breaks on an empty array in this case
-        if not self._obj.size:
-            return self._obj.copy().expand_dims({dim: 0}, axis=-1)
-
-        arrfunc = lambda x, isep: np.array(func(x, isep), dtype=self._obj.dtype)
-
-        # dtype MUST be object or strings can be truncated
-        # See: https://github.com/numpy/numpy/issues/8352
-        return duck_array_ops.astype(
-            self._apply(
-                func=arrfunc,
-                func_args=(sep,),
-                dtype=np.object_,
-                output_core_dims=[[dim]],
-                output_sizes={dim: 3},
-            ),
-            self._obj.dtype.kind,
-        )
-
-    def partition(
-        self,
-        dim: Hashable | None,
-        sep: str | bytes | Any = " ",
-    ) -> T_DataArray:
+    def partition(self, dim: Hashable | None, sep: str | bytes | Any=' ') -> T_DataArray:
         """
         Split the strings in the DataArray at the first occurrence of separator `sep`.
 
@@ -2439,13 +1824,9 @@ class StringAccessor(Generic[T_DataArray]):
         str.partition
         pandas.Series.str.partition
         """
-        return self._partitioner(func=self._obj.dtype.type.partition, dim=dim, sep=sep)
+        pass
 
-    def rpartition(
-        self,
-        dim: Hashable | None,
-        sep: str | bytes | Any = " ",
-    ) -> T_DataArray:
+    def rpartition(self, dim: Hashable | None, sep: str | bytes | Any=' ') -> T_DataArray:
         """
         Split the strings in the DataArray at the last occurrence of separator `sep`.
 
@@ -2477,67 +1858,16 @@ class StringAccessor(Generic[T_DataArray]):
         str.rpartition
         pandas.Series.str.rpartition
         """
-        return self._partitioner(func=self._obj.dtype.type.rpartition, dim=dim, sep=sep)
+        pass
 
-    def _splitter(
-        self,
-        *,
-        func: Callable,
-        pre: bool,
-        dim: Hashable,
-        sep: str | bytes | Any | None,
-        maxsplit: int,
-    ) -> DataArray:
+    def _splitter(self, *, func: Callable, pre: bool, dim: Hashable, sep: str | bytes | Any | None, maxsplit: int) -> DataArray:
         """
         Implements logic for `split` and `rsplit`.
         """
-        if sep is not None:
-            sep = self._stringify(sep)
+        pass
 
-        if dim is None:
-            f_none = lambda x, isep: func(x, isep, maxsplit)
-            return self._apply(func=f_none, func_args=(sep,), dtype=np.object_)
-
-        # _apply breaks on an empty array in this case
-        if not self._obj.size:
-            return self._obj.copy().expand_dims({dim: 0}, axis=-1)
-
-        f_count = lambda x, isep: max(len(func(x, isep, maxsplit)), 1)
-        maxsplit = (
-            self._apply(func=f_count, func_args=(sep,), dtype=np.int_).max().data.item()
-            - 1
-        )
-
-        def _dosplit(mystr, sep, maxsplit=maxsplit, dtype=self._obj.dtype):
-            res = func(mystr, sep, maxsplit)
-            if len(res) < maxsplit + 1:
-                pad = [""] * (maxsplit + 1 - len(res))
-                if pre:
-                    res += pad
-                else:
-                    res = pad + res
-            return np.array(res, dtype=dtype)
-
-        # dtype MUST be object or strings can be truncated
-        # See: https://github.com/numpy/numpy/issues/8352
-        return duck_array_ops.astype(
-            self._apply(
-                func=_dosplit,
-                func_args=(sep,),
-                dtype=np.object_,
-                output_core_dims=[[dim]],
-                output_sizes={dim: maxsplit},
-            ),
-            self._obj.dtype.kind,
-        )
-
-    def split(
-        self,
-        dim: Hashable | None,
-        sep: str | bytes | Any = None,
-        maxsplit: int = -1,
-    ) -> DataArray:
-        r"""
+    def split(self, dim: Hashable | None, sep: str | bytes | Any=None, maxsplit: int=-1) -> DataArray:
+        """
         Split strings in a DataArray around the given separator/delimiter `sep`.
 
         Splits the string in the DataArray from the beginning,
@@ -2568,8 +1898,8 @@ class StringAccessor(Generic[T_DataArray]):
 
         >>> values = xr.DataArray(
         ...     [
-        ...         ["abc def", "spam\t\teggs\tswallow", "red_blue"],
-        ...         ["test0\ntest1\ntest2\n\ntest3", "", "abra  ka\nda\tbra"],
+        ...         ["abc def", "spam\\t\\teggs\\tswallow", "red_blue"],
+        ...         ["test0\\ntest1\\ntest2\\n\\ntest3", "", "abra  ka\\nda\\tbra"],
         ...     ],
         ...     dims=["X", "Y"],
         ... )
@@ -2579,12 +1909,12 @@ class StringAccessor(Generic[T_DataArray]):
         >>> values.str.split(dim="splitted", maxsplit=1)
         <xarray.DataArray (X: 2, Y: 3, splitted: 2)> Size: 864B
         array([[['abc', 'def'],
-                ['spam', 'eggs\tswallow'],
+                ['spam', 'eggs\\tswallow'],
                 ['red_blue', '']],
         <BLANKLINE>
-               [['test0', 'test1\ntest2\n\ntest3'],
+               [['test0', 'test1\\ntest2\\n\\ntest3'],
                 ['', ''],
-                ['abra', 'ka\nda\tbra']]], dtype='<U18')
+                ['abra', 'ka\\nda\\tbra']]], dtype='<U18')
         Dimensions without coordinates: X, Y, splitted
 
         Split as many times as needed and put the results in a new dimension
@@ -2604,10 +1934,10 @@ class StringAccessor(Generic[T_DataArray]):
 
         >>> values.str.split(dim=None, maxsplit=1)
         <xarray.DataArray (X: 2, Y: 3)> Size: 48B
-        array([[list(['abc', 'def']), list(['spam', 'eggs\tswallow']),
+        array([[list(['abc', 'def']), list(['spam', 'eggs\\tswallow']),
                 list(['red_blue'])],
-               [list(['test0', 'test1\ntest2\n\ntest3']), list([]),
-                list(['abra', 'ka\nda\tbra'])]], dtype=object)
+               [list(['test0', 'test1\\ntest2\\n\\ntest3']), list([]),
+                list(['abra', 'ka\\nda\\tbra'])]], dtype=object)
         Dimensions without coordinates: X, Y
 
         Split as many times as needed and put the results in a list
@@ -2625,12 +1955,12 @@ class StringAccessor(Generic[T_DataArray]):
         >>> values.str.split(dim="splitted", sep=" ")
         <xarray.DataArray (X: 2, Y: 3, splitted: 3)> Size: 2kB
         array([[['abc', 'def', ''],
-                ['spam\t\teggs\tswallow', '', ''],
+                ['spam\\t\\teggs\\tswallow', '', ''],
                 ['red_blue', '', '']],
         <BLANKLINE>
-               [['test0\ntest1\ntest2\n\ntest3', '', ''],
+               [['test0\\ntest1\\ntest2\\n\\ntest3', '', ''],
                 ['', '', ''],
-                ['abra', '', 'ka\nda\tbra']]], dtype='<U24')
+                ['abra', '', 'ka\\nda\\tbra']]], dtype='<U24')
         Dimensions without coordinates: X, Y, splitted
 
         See Also
@@ -2639,21 +1969,10 @@ class StringAccessor(Generic[T_DataArray]):
         str.split
         pandas.Series.str.split
         """
-        return self._splitter(
-            func=self._obj.dtype.type.split,
-            pre=True,
-            dim=dim,
-            sep=sep,
-            maxsplit=maxsplit,
-        )
+        pass
 
-    def rsplit(
-        self,
-        dim: Hashable | None,
-        sep: str | bytes | Any = None,
-        maxsplit: int | Any = -1,
-    ) -> DataArray:
-        r"""
+    def rsplit(self, dim: Hashable | None, sep: str | bytes | Any=None, maxsplit: int | Any=-1) -> DataArray:
+        """
         Split strings in a DataArray around the given separator/delimiter `sep`.
 
         Splits the string in the DataArray from the end,
@@ -2686,8 +2005,8 @@ class StringAccessor(Generic[T_DataArray]):
 
         >>> values = xr.DataArray(
         ...     [
-        ...         ["abc def", "spam\t\teggs\tswallow", "red_blue"],
-        ...         ["test0\ntest1\ntest2\n\ntest3", "", "abra  ka\nda\tbra"],
+        ...         ["abc def", "spam\\t\\teggs\\tswallow", "red_blue"],
+        ...         ["test0\\ntest1\\ntest2\\n\\ntest3", "", "abra  ka\\nda\\tbra"],
         ...     ],
         ...     dims=["X", "Y"],
         ... )
@@ -2697,12 +2016,12 @@ class StringAccessor(Generic[T_DataArray]):
         >>> values.str.rsplit(dim="splitted", maxsplit=1)
         <xarray.DataArray (X: 2, Y: 3, splitted: 2)> Size: 816B
         array([[['abc', 'def'],
-                ['spam\t\teggs', 'swallow'],
+                ['spam\\t\\teggs', 'swallow'],
                 ['', 'red_blue']],
         <BLANKLINE>
-               [['test0\ntest1\ntest2', 'test3'],
+               [['test0\\ntest1\\ntest2', 'test3'],
                 ['', ''],
-                ['abra  ka\nda', 'bra']]], dtype='<U17')
+                ['abra  ka\\nda', 'bra']]], dtype='<U17')
         Dimensions without coordinates: X, Y, splitted
 
         Split as many times as needed and put the results in a new dimension
@@ -2722,10 +2041,10 @@ class StringAccessor(Generic[T_DataArray]):
 
         >>> values.str.rsplit(dim=None, maxsplit=1)
         <xarray.DataArray (X: 2, Y: 3)> Size: 48B
-        array([[list(['abc', 'def']), list(['spam\t\teggs', 'swallow']),
+        array([[list(['abc', 'def']), list(['spam\\t\\teggs', 'swallow']),
                 list(['red_blue'])],
-               [list(['test0\ntest1\ntest2', 'test3']), list([]),
-                list(['abra  ka\nda', 'bra'])]], dtype=object)
+               [list(['test0\\ntest1\\ntest2', 'test3']), list([]),
+                list(['abra  ka\\nda', 'bra'])]], dtype=object)
         Dimensions without coordinates: X, Y
 
         Split as many times as needed and put the results in a list
@@ -2743,12 +2062,12 @@ class StringAccessor(Generic[T_DataArray]):
         >>> values.str.rsplit(dim="splitted", sep=" ")
         <xarray.DataArray (X: 2, Y: 3, splitted: 3)> Size: 2kB
         array([[['', 'abc', 'def'],
-                ['', '', 'spam\t\teggs\tswallow'],
+                ['', '', 'spam\\t\\teggs\\tswallow'],
                 ['', '', 'red_blue']],
         <BLANKLINE>
-               [['', '', 'test0\ntest1\ntest2\n\ntest3'],
+               [['', '', 'test0\\ntest1\\ntest2\\n\\ntest3'],
                 ['', '', ''],
-                ['abra', '', 'ka\nda\tbra']]], dtype='<U24')
+                ['abra', '', 'ka\\nda\\tbra']]], dtype='<U24')
         Dimensions without coordinates: X, Y, splitted
 
         See Also
@@ -2757,19 +2076,9 @@ class StringAccessor(Generic[T_DataArray]):
         str.rsplit
         pandas.Series.str.rsplit
         """
-        return self._splitter(
-            func=self._obj.dtype.type.rsplit,
-            pre=False,
-            dim=dim,
-            sep=sep,
-            maxsplit=maxsplit,
-        )
+        pass
 
-    def get_dummies(
-        self,
-        dim: Hashable,
-        sep: str | bytes | Any = "|",
-    ) -> DataArray:
+    def get_dummies(self, dim: Hashable, sep: str | bytes | Any='|') -> DataArray:
         """
         Return DataArray of dummy/indicator variables.
 
@@ -2824,27 +2133,9 @@ class StringAccessor(Generic[T_DataArray]):
         --------
         pandas.Series.str.get_dummies
         """
-        # _apply breaks on an empty array in this case
-        if not self._obj.size:
-            return self._obj.copy().expand_dims({dim: 0}, axis=-1)
+        pass
 
-        sep = self._stringify(sep)
-        f_set = lambda x, isep: set(x.split(isep)) - {self._stringify("")}
-        setarr = self._apply(func=f_set, func_args=(sep,), dtype=np.object_)
-        vals = sorted(reduce(set_union, setarr.data.ravel()))
-
-        func = lambda x: np.array([val in x for val in vals], dtype=np.bool_)
-        res = _apply_str_ufunc(
-            func=func,
-            obj=setarr,
-            output_core_dims=[[dim]],
-            output_sizes={dim: len(vals)},
-            dtype=np.bool_,
-        )
-        res.coords[dim] = vals
-        return res
-
-    def decode(self, encoding: str, errors: str = "strict") -> T_DataArray:
+    def decode(self, encoding: str, errors: str='strict') -> T_DataArray:
         """
         Decode character string in the array using indicated encoding.
 
@@ -2863,14 +2154,9 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         decoded : same type as values
         """
-        if encoding in _cpython_optimized_decoders:
-            func = lambda x: x.decode(encoding, errors)
-        else:
-            decoder = codecs.getdecoder(encoding)
-            func = lambda x: decoder(x, errors)[0]
-        return self._apply(func=func, dtype=np.str_)
+        pass
 
-    def encode(self, encoding: str, errors: str = "strict") -> T_DataArray:
+    def encode(self, encoding: str, errors: str='strict') -> T_DataArray:
         """
         Encode character string in the array using indicated encoding.
 
@@ -2889,9 +2175,4 @@ class StringAccessor(Generic[T_DataArray]):
         -------
         encoded : same type as values
         """
-        if encoding in _cpython_optimized_encoders:
-            func = lambda x: x.encode(encoding, errors)
-        else:
-            encoder = codecs.getencoder(encoding)
-            func = lambda x: encoder(x, errors)[0]
-        return self._apply(func=func, dtype=np.bytes_)
+        pass

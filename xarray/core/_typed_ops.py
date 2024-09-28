@@ -1,34 +1,16 @@
 """Mixin classes with arithmetic operators."""
-
-# This file was generated using xarray.util.generate_ops. Do not edit manually.
-
 from __future__ import annotations
-
 import operator
 from typing import TYPE_CHECKING, Any, Callable, overload
-
 from xarray.core import nputils, ops
-from xarray.core.types import (
-    DaCompatible,
-    DsCompatible,
-    Self,
-    T_Xarray,
-    VarCompatible,
-)
-
+from xarray.core.types import DaCompatible, DsCompatible, Self, T_Xarray, VarCompatible
 if TYPE_CHECKING:
     from xarray.core.dataarray import DataArray
     from xarray.core.dataset import Dataset
     from xarray.core.types import T_DataArray as T_DA
 
-
 class DatasetOpsMixin:
     __slots__ = ()
-
-    def _binary_op(
-        self, other: DsCompatible, f: Callable, reflexive: bool = False
-    ) -> Self:
-        raise NotImplementedError
 
     def __add__(self, other: DsCompatible) -> Self:
         return self._binary_op(other, operator.add)
@@ -78,15 +60,12 @@ class DatasetOpsMixin:
     def __ge__(self, other: DsCompatible) -> Self:
         return self._binary_op(other, operator.ge)
 
-    def __eq__(self, other: DsCompatible) -> Self:  # type:ignore[override]
+    def __eq__(self, other: DsCompatible) -> Self:
         return self._binary_op(other, nputils.array_eq)
 
-    def __ne__(self, other: DsCompatible) -> Self:  # type:ignore[override]
+    def __ne__(self, other: DsCompatible) -> Self:
         return self._binary_op(other, nputils.array_ne)
-
-    # When __eq__ is defined but __hash__ is not, then an object is unhashable,
-    # and it should be declared as follows:
-    __hash__: None  # type:ignore[assignment]
+    __hash__: None
 
     def __radd__(self, other: DsCompatible) -> Self:
         return self._binary_op(other, operator.add, reflexive=True)
@@ -117,9 +96,6 @@ class DatasetOpsMixin:
 
     def __ror__(self, other: DsCompatible) -> Self:
         return self._binary_op(other, operator.or_, reflexive=True)
-
-    def _inplace_binary_op(self, other: DsCompatible, f: Callable) -> Self:
-        raise NotImplementedError
 
     def __iadd__(self, other: DsCompatible) -> Self:
         return self._inplace_binary_op(other, operator.iadd)
@@ -157,9 +133,6 @@ class DatasetOpsMixin:
     def __irshift__(self, other: DsCompatible) -> Self:
         return self._inplace_binary_op(other, operator.irshift)
 
-    def _unary_op(self, f: Callable, *args: Any, **kwargs: Any) -> Self:
-        raise NotImplementedError
-
     def __neg__(self) -> Self:
         return self._unary_op(operator.neg)
 
@@ -171,19 +144,6 @@ class DatasetOpsMixin:
 
     def __invert__(self) -> Self:
         return self._unary_op(operator.invert)
-
-    def round(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.round_, *args, **kwargs)
-
-    def argsort(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.argsort, *args, **kwargs)
-
-    def conj(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.conj, *args, **kwargs)
-
-    def conjugate(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.conjugate, *args, **kwargs)
-
     __add__.__doc__ = operator.add.__doc__
     __sub__.__doc__ = operator.sub.__doc__
     __mul__.__doc__ = operator.mul.__doc__
@@ -233,14 +193,8 @@ class DatasetOpsMixin:
     conj.__doc__ = ops.conj.__doc__
     conjugate.__doc__ = ops.conjugate.__doc__
 
-
 class DataArrayOpsMixin:
     __slots__ = ()
-
-    def _binary_op(
-        self, other: DaCompatible, f: Callable, reflexive: bool = False
-    ) -> Self:
-        raise NotImplementedError
 
     def __add__(self, other: DaCompatible) -> Self:
         return self._binary_op(other, operator.add)
@@ -290,15 +244,12 @@ class DataArrayOpsMixin:
     def __ge__(self, other: DaCompatible) -> Self:
         return self._binary_op(other, operator.ge)
 
-    def __eq__(self, other: DaCompatible) -> Self:  # type:ignore[override]
+    def __eq__(self, other: DaCompatible) -> Self:
         return self._binary_op(other, nputils.array_eq)
 
-    def __ne__(self, other: DaCompatible) -> Self:  # type:ignore[override]
+    def __ne__(self, other: DaCompatible) -> Self:
         return self._binary_op(other, nputils.array_ne)
-
-    # When __eq__ is defined but __hash__ is not, then an object is unhashable,
-    # and it should be declared as follows:
-    __hash__: None  # type:ignore[assignment]
+    __hash__: None
 
     def __radd__(self, other: DaCompatible) -> Self:
         return self._binary_op(other, operator.add, reflexive=True)
@@ -329,9 +280,6 @@ class DataArrayOpsMixin:
 
     def __ror__(self, other: DaCompatible) -> Self:
         return self._binary_op(other, operator.or_, reflexive=True)
-
-    def _inplace_binary_op(self, other: DaCompatible, f: Callable) -> Self:
-        raise NotImplementedError
 
     def __iadd__(self, other: DaCompatible) -> Self:
         return self._inplace_binary_op(other, operator.iadd)
@@ -369,9 +317,6 @@ class DataArrayOpsMixin:
     def __irshift__(self, other: DaCompatible) -> Self:
         return self._inplace_binary_op(other, operator.irshift)
 
-    def _unary_op(self, f: Callable, *args: Any, **kwargs: Any) -> Self:
-        raise NotImplementedError
-
     def __neg__(self) -> Self:
         return self._unary_op(operator.neg)
 
@@ -383,19 +328,6 @@ class DataArrayOpsMixin:
 
     def __invert__(self) -> Self:
         return self._unary_op(operator.invert)
-
-    def round(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.round_, *args, **kwargs)
-
-    def argsort(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.argsort, *args, **kwargs)
-
-    def conj(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.conj, *args, **kwargs)
-
-    def conjugate(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.conjugate, *args, **kwargs)
-
     __add__.__doc__ = operator.add.__doc__
     __sub__.__doc__ = operator.sub.__doc__
     __mul__.__doc__ = operator.mul.__doc__
@@ -445,180 +377,207 @@ class DataArrayOpsMixin:
     conj.__doc__ = ops.conj.__doc__
     conjugate.__doc__ = ops.conjugate.__doc__
 
-
 class VariableOpsMixin:
     __slots__ = ()
 
-    def _binary_op(
-        self, other: VarCompatible, f: Callable, reflexive: bool = False
-    ) -> Self:
-        raise NotImplementedError
+    @overload
+    def __add__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __add__(self, other: T_DA) -> T_DA: ...
-
-    @overload
-    def __add__(self, other: VarCompatible) -> Self: ...
+    def __add__(self, other: VarCompatible) -> Self:
+        ...
 
     def __add__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.add)
 
     @overload
-    def __sub__(self, other: T_DA) -> T_DA: ...
+    def __sub__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __sub__(self, other: VarCompatible) -> Self: ...
+    def __sub__(self, other: VarCompatible) -> Self:
+        ...
 
     def __sub__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.sub)
 
     @overload
-    def __mul__(self, other: T_DA) -> T_DA: ...
+    def __mul__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __mul__(self, other: VarCompatible) -> Self: ...
+    def __mul__(self, other: VarCompatible) -> Self:
+        ...
 
     def __mul__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.mul)
 
     @overload
-    def __pow__(self, other: T_DA) -> T_DA: ...
+    def __pow__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __pow__(self, other: VarCompatible) -> Self: ...
+    def __pow__(self, other: VarCompatible) -> Self:
+        ...
 
     def __pow__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.pow)
 
     @overload
-    def __truediv__(self, other: T_DA) -> T_DA: ...
+    def __truediv__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __truediv__(self, other: VarCompatible) -> Self: ...
+    def __truediv__(self, other: VarCompatible) -> Self:
+        ...
 
     def __truediv__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.truediv)
 
     @overload
-    def __floordiv__(self, other: T_DA) -> T_DA: ...
+    def __floordiv__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __floordiv__(self, other: VarCompatible) -> Self: ...
+    def __floordiv__(self, other: VarCompatible) -> Self:
+        ...
 
     def __floordiv__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.floordiv)
 
     @overload
-    def __mod__(self, other: T_DA) -> T_DA: ...
+    def __mod__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __mod__(self, other: VarCompatible) -> Self: ...
+    def __mod__(self, other: VarCompatible) -> Self:
+        ...
 
     def __mod__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.mod)
 
     @overload
-    def __and__(self, other: T_DA) -> T_DA: ...
+    def __and__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __and__(self, other: VarCompatible) -> Self: ...
+    def __and__(self, other: VarCompatible) -> Self:
+        ...
 
     def __and__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.and_)
 
     @overload
-    def __xor__(self, other: T_DA) -> T_DA: ...
+    def __xor__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __xor__(self, other: VarCompatible) -> Self: ...
+    def __xor__(self, other: VarCompatible) -> Self:
+        ...
 
     def __xor__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.xor)
 
     @overload
-    def __or__(self, other: T_DA) -> T_DA: ...
+    def __or__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __or__(self, other: VarCompatible) -> Self: ...
+    def __or__(self, other: VarCompatible) -> Self:
+        ...
 
     def __or__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.or_)
 
     @overload
-    def __lshift__(self, other: T_DA) -> T_DA: ...
+    def __lshift__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __lshift__(self, other: VarCompatible) -> Self: ...
+    def __lshift__(self, other: VarCompatible) -> Self:
+        ...
 
     def __lshift__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.lshift)
 
     @overload
-    def __rshift__(self, other: T_DA) -> T_DA: ...
+    def __rshift__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __rshift__(self, other: VarCompatible) -> Self: ...
+    def __rshift__(self, other: VarCompatible) -> Self:
+        ...
 
     def __rshift__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.rshift)
 
     @overload
-    def __lt__(self, other: T_DA) -> T_DA: ...
+    def __lt__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __lt__(self, other: VarCompatible) -> Self: ...
+    def __lt__(self, other: VarCompatible) -> Self:
+        ...
 
     def __lt__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.lt)
 
     @overload
-    def __le__(self, other: T_DA) -> T_DA: ...
+    def __le__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __le__(self, other: VarCompatible) -> Self: ...
+    def __le__(self, other: VarCompatible) -> Self:
+        ...
 
     def __le__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.le)
 
     @overload
-    def __gt__(self, other: T_DA) -> T_DA: ...
+    def __gt__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __gt__(self, other: VarCompatible) -> Self: ...
+    def __gt__(self, other: VarCompatible) -> Self:
+        ...
 
     def __gt__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.gt)
 
     @overload
-    def __ge__(self, other: T_DA) -> T_DA: ...
+    def __ge__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __ge__(self, other: VarCompatible) -> Self: ...
+    def __ge__(self, other: VarCompatible) -> Self:
+        ...
 
     def __ge__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, operator.ge)
 
-    @overload  # type:ignore[override]
-    def __eq__(self, other: T_DA) -> T_DA: ...
+    @overload
+    def __eq__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __eq__(self, other: VarCompatible) -> Self: ...
+    def __eq__(self, other: VarCompatible) -> Self:
+        ...
 
     def __eq__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, nputils.array_eq)
 
-    @overload  # type:ignore[override]
-    def __ne__(self, other: T_DA) -> T_DA: ...
+    @overload
+    def __ne__(self, other: T_DA) -> T_DA:
+        ...
 
     @overload
-    def __ne__(self, other: VarCompatible) -> Self: ...
+    def __ne__(self, other: VarCompatible) -> Self:
+        ...
 
     def __ne__(self, other: VarCompatible) -> Self | T_DA:
         return self._binary_op(other, nputils.array_ne)
-
-    # When __eq__ is defined but __hash__ is not, then an object is unhashable,
-    # and it should be declared as follows:
-    __hash__: None  # type:ignore[assignment]
+    __hash__: None
 
     def __radd__(self, other: VarCompatible) -> Self:
         return self._binary_op(other, operator.add, reflexive=True)
@@ -650,47 +609,41 @@ class VariableOpsMixin:
     def __ror__(self, other: VarCompatible) -> Self:
         return self._binary_op(other, operator.or_, reflexive=True)
 
-    def _inplace_binary_op(self, other: VarCompatible, f: Callable) -> Self:
-        raise NotImplementedError
-
-    def __iadd__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __iadd__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.iadd)
 
-    def __isub__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __isub__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.isub)
 
-    def __imul__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __imul__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.imul)
 
-    def __ipow__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __ipow__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.ipow)
 
-    def __itruediv__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __itruediv__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.itruediv)
 
-    def __ifloordiv__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __ifloordiv__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.ifloordiv)
 
-    def __imod__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __imod__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.imod)
 
-    def __iand__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __iand__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.iand)
 
-    def __ixor__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __ixor__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.ixor)
 
-    def __ior__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __ior__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.ior)
 
-    def __ilshift__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __ilshift__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.ilshift)
 
-    def __irshift__(self, other: VarCompatible) -> Self:  # type:ignore[misc]
+    def __irshift__(self, other: VarCompatible) -> Self:
         return self._inplace_binary_op(other, operator.irshift)
-
-    def _unary_op(self, f: Callable, *args: Any, **kwargs: Any) -> Self:
-        raise NotImplementedError
 
     def __neg__(self) -> Self:
         return self._unary_op(operator.neg)
@@ -703,19 +656,6 @@ class VariableOpsMixin:
 
     def __invert__(self) -> Self:
         return self._unary_op(operator.invert)
-
-    def round(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.round_, *args, **kwargs)
-
-    def argsort(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.argsort, *args, **kwargs)
-
-    def conj(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.conj, *args, **kwargs)
-
-    def conjugate(self, *args: Any, **kwargs: Any) -> Self:
-        return self._unary_op(ops.conjugate, *args, **kwargs)
-
     __add__.__doc__ = operator.add.__doc__
     __sub__.__doc__ = operator.sub.__doc__
     __mul__.__doc__ = operator.mul.__doc__
@@ -765,14 +705,8 @@ class VariableOpsMixin:
     conj.__doc__ = ops.conj.__doc__
     conjugate.__doc__ = ops.conjugate.__doc__
 
-
 class DatasetGroupByOpsMixin:
     __slots__ = ()
-
-    def _binary_op(
-        self, other: Dataset | DataArray, f: Callable, reflexive: bool = False
-    ) -> Dataset:
-        raise NotImplementedError
 
     def __add__(self, other: Dataset | DataArray) -> Dataset:
         return self._binary_op(other, operator.add)
@@ -822,15 +756,12 @@ class DatasetGroupByOpsMixin:
     def __ge__(self, other: Dataset | DataArray) -> Dataset:
         return self._binary_op(other, operator.ge)
 
-    def __eq__(self, other: Dataset | DataArray) -> Dataset:  # type:ignore[override]
+    def __eq__(self, other: Dataset | DataArray) -> Dataset:
         return self._binary_op(other, nputils.array_eq)
 
-    def __ne__(self, other: Dataset | DataArray) -> Dataset:  # type:ignore[override]
+    def __ne__(self, other: Dataset | DataArray) -> Dataset:
         return self._binary_op(other, nputils.array_ne)
-
-    # When __eq__ is defined but __hash__ is not, then an object is unhashable,
-    # and it should be declared as follows:
-    __hash__: None  # type:ignore[assignment]
+    __hash__: None
 
     def __radd__(self, other: Dataset | DataArray) -> Dataset:
         return self._binary_op(other, operator.add, reflexive=True)
@@ -861,7 +792,6 @@ class DatasetGroupByOpsMixin:
 
     def __ror__(self, other: Dataset | DataArray) -> Dataset:
         return self._binary_op(other, operator.or_, reflexive=True)
-
     __add__.__doc__ = operator.add.__doc__
     __sub__.__doc__ = operator.sub.__doc__
     __mul__.__doc__ = operator.mul.__doc__
@@ -891,14 +821,8 @@ class DatasetGroupByOpsMixin:
     __rxor__.__doc__ = operator.xor.__doc__
     __ror__.__doc__ = operator.or_.__doc__
 
-
 class DataArrayGroupByOpsMixin:
     __slots__ = ()
-
-    def _binary_op(
-        self, other: T_Xarray, f: Callable, reflexive: bool = False
-    ) -> T_Xarray:
-        raise NotImplementedError
 
     def __add__(self, other: T_Xarray) -> T_Xarray:
         return self._binary_op(other, operator.add)
@@ -948,15 +872,12 @@ class DataArrayGroupByOpsMixin:
     def __ge__(self, other: T_Xarray) -> T_Xarray:
         return self._binary_op(other, operator.ge)
 
-    def __eq__(self, other: T_Xarray) -> T_Xarray:  # type:ignore[override]
+    def __eq__(self, other: T_Xarray) -> T_Xarray:
         return self._binary_op(other, nputils.array_eq)
 
-    def __ne__(self, other: T_Xarray) -> T_Xarray:  # type:ignore[override]
+    def __ne__(self, other: T_Xarray) -> T_Xarray:
         return self._binary_op(other, nputils.array_ne)
-
-    # When __eq__ is defined but __hash__ is not, then an object is unhashable,
-    # and it should be declared as follows:
-    __hash__: None  # type:ignore[assignment]
+    __hash__: None
 
     def __radd__(self, other: T_Xarray) -> T_Xarray:
         return self._binary_op(other, operator.add, reflexive=True)
@@ -987,7 +908,6 @@ class DataArrayGroupByOpsMixin:
 
     def __ror__(self, other: T_Xarray) -> T_Xarray:
         return self._binary_op(other, operator.or_, reflexive=True)
-
     __add__.__doc__ = operator.add.__doc__
     __sub__.__doc__ = operator.sub.__doc__
     __mul__.__doc__ = operator.mul.__doc__

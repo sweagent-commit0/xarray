@@ -5,20 +5,16 @@ Minor changes to `RenderDataTree` include accessing `children.values()`, and
 type hints.
 
 """
-
 from __future__ import annotations
-
 from collections import namedtuple
 from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
     from xarray.core.datatree import DataTree
-
-Row = namedtuple("Row", ("pre", "fill", "node"))
-
+Row = namedtuple('Row', ('pre', 'fill', 'node'))
 
 class AbstractStyle:
+
     def __init__(self, vertical: str, cont: str, end: str):
         """
         Tree Render Style.
@@ -31,20 +27,18 @@ class AbstractStyle:
         self.vertical = vertical
         self.cont = cont
         self.end = end
-        assert (
-            len(cont) == len(vertical) == len(end)
-        ), f"'{vertical}', '{cont}' and '{end}' need to have equal length"
+        assert len(cont) == len(vertical) == len(end), f"'{vertical}', '{cont}' and '{end}' need to have equal length"
 
     @property
     def empty(self) -> str:
         """Empty string as placeholder."""
-        return " " * len(self.end)
+        pass
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}()"
-
+        return f'{self.__class__.__name__}()'
 
 class ContStyle(AbstractStyle):
+
     def __init__(self):
         """
         Continued style, without gaps.
@@ -64,17 +58,11 @@ class ContStyle(AbstractStyle):
         │   └── Group: /sub0/sub0A
         └── Group: /sub1
         """
-        super().__init__("\u2502   ", "\u251c\u2500\u2500 ", "\u2514\u2500\u2500 ")
-
+        super().__init__('│   ', '├── ', '└── ')
 
 class RenderDataTree:
-    def __init__(
-        self,
-        node: DataTree,
-        style=ContStyle(),
-        childiter: type = list,
-        maxlevel: int | None = None,
-    ):
+
+    def __init__(self, node: DataTree, style=ContStyle(), childiter: type=list, maxlevel: int | None=None):
         """
         Render tree starting at `node`.
         Keyword Args:
@@ -161,44 +149,15 @@ class RenderDataTree:
     def __iter__(self) -> Iterator[Row]:
         return self.__next(self.node, tuple())
 
-    def __next(
-        self, node: DataTree, continues: tuple[bool, ...], level: int = 0
-    ) -> Iterator[Row]:
-        yield RenderDataTree.__item(node, continues, self.style)
-        children = node.children.values()
-        level += 1
-        if children and (self.maxlevel is None or level < self.maxlevel):
-            children = self.childiter(children)
-            for child, is_last in _is_last(children):
-                yield from self.__next(child, continues + (not is_last,), level=level)
-
-    @staticmethod
-    def __item(
-        node: DataTree, continues: tuple[bool, ...], style: AbstractStyle
-    ) -> Row:
-        if not continues:
-            return Row("", "", node)
-        else:
-            items = [style.vertical if cont else style.empty for cont in continues]
-            indent = "".join(items[:-1])
-            branch = style.cont if continues[-1] else style.end
-            pre = indent + branch
-            fill = "".join(items)
-            return Row(pre, fill, node)
-
     def __str__(self) -> str:
         return str(self.node)
 
     def __repr__(self) -> str:
         classname = self.__class__.__name__
-        args = [
-            repr(self.node),
-            f"style={repr(self.style)}",
-            f"childiter={repr(self.childiter)}",
-        ]
-        return f"{classname}({', '.join(args)})"
+        args = [repr(self.node), f'style={repr(self.style)}', f'childiter={repr(self.childiter)}']
+        return f'{classname}({', '.join(args)})'
 
-    def by_attr(self, attrname: str = "name") -> str:
+    def by_attr(self, attrname: str='name') -> str:
         """
         Return rendered tree with node attribute `attrname`.
 
@@ -230,38 +189,4 @@ class RenderDataTree:
             └── sub1C
                 └── sub1Ca
         """
-
-        def get() -> Iterator[str]:
-            for pre, fill, node in self:
-                attr = (
-                    attrname(node)
-                    if callable(attrname)
-                    else getattr(node, attrname, "")
-                )
-                if isinstance(attr, (list, tuple)):
-                    lines = attr
-                else:
-                    lines = str(attr).split("\n")
-                yield f"{pre}{lines[0]}"
-                for line in lines[1:]:
-                    yield f"{fill}{line}"
-
-        return "\n".join(get())
-
-
-def _is_last(iterable: Iterable) -> Iterator[tuple[DataTree, bool]]:
-    iter_ = iter(iterable)
-    try:
-        nextitem = next(iter_)
-    except StopIteration:
         pass
-    else:
-        item = nextitem
-        while True:
-            try:
-                nextitem = next(iter_)
-                yield item, False
-            except StopIteration:
-                yield nextitem, True
-                break
-            item = nextitem

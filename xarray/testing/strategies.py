@@ -1,44 +1,22 @@
 from collections.abc import Hashable, Iterable, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, Protocol, Union, overload
-
 try:
     import hypothesis.strategies as st
 except ImportError as e:
-    raise ImportError(
-        "`xarray.testing.strategies` requires `hypothesis` to be installed."
-    ) from e
-
+    raise ImportError('`xarray.testing.strategies` requires `hypothesis` to be installed.') from e
 import hypothesis.extra.numpy as npst
 import numpy as np
 from hypothesis.errors import InvalidArgument
-
 import xarray as xr
 from xarray.core.types import T_DuckArray
-
 if TYPE_CHECKING:
     from xarray.core.types import _DTypeLikeNested, _ShapeLike
-
-
-__all__ = [
-    "supported_dtypes",
-    "pandas_index_dtypes",
-    "names",
-    "dimension_names",
-    "dimension_sizes",
-    "attrs",
-    "variables",
-    "unique_subset_of",
-]
-
+__all__ = ['supported_dtypes', 'pandas_index_dtypes', 'names', 'dimension_names', 'dimension_sizes', 'attrs', 'variables', 'unique_subset_of']
 
 class ArrayStrategyFn(Protocol[T_DuckArray]):
-    def __call__(
-        self,
-        *,
-        shape: "_ShapeLike",
-        dtype: "_DTypeLikeNested",
-    ) -> st.SearchStrategy[T_DuckArray]: ...
 
+    def __call__(self, *, shape: '_ShapeLike', dtype: '_DTypeLikeNested') -> st.SearchStrategy[T_DuckArray]:
+        ...
 
 def supported_dtypes() -> st.SearchStrategy[np.dtype]:
     """
@@ -53,41 +31,15 @@ def supported_dtypes() -> st.SearchStrategy[np.dtype]:
     --------
     :ref:`testing.hypothesis`_
     """
-    # TODO should this be exposed publicly?
-    # We should at least decide what the set of numpy dtypes that xarray officially supports is.
-    return (
-        npst.integer_dtypes(endianness="=")
-        | npst.unsigned_integer_dtypes(endianness="=")
-        | npst.floating_dtypes(endianness="=")
-        | npst.complex_number_dtypes(endianness="=")
-        # | npst.datetime64_dtypes()
-        # | npst.timedelta64_dtypes()
-        # | npst.unicode_string_dtypes()
-    )
-
+    pass
 
 def pandas_index_dtypes() -> st.SearchStrategy[np.dtype]:
     """
     Dtypes supported by pandas indexes.
     Restrict datetime64 and timedelta64 to ns frequency till Xarray relaxes that.
     """
-    return (
-        npst.integer_dtypes(endianness="=", sizes=(32, 64))
-        | npst.unsigned_integer_dtypes(endianness="=", sizes=(32, 64))
-        | npst.floating_dtypes(endianness="=", sizes=(32, 64))
-        # TODO: unset max_period
-        | npst.datetime64_dtypes(endianness="=", max_period="ns")
-        # TODO: set max_period="D"
-        | npst.timedelta64_dtypes(endianness="=", max_period="ns")
-        | npst.unicode_string_dtypes(endianness="=")
-    )
-
-
-# TODO Generalize to all valid unicode characters once formatting bugs in xarray's reprs are fixed + docs can handle it.
-_readable_characters = st.characters(
-    categories=["L", "N"], max_codepoint=0x017F
-)  # only use characters within the "Latin Extended-A" subset of unicode
-
+    pass
+_readable_characters = st.characters(categories=['L', 'N'], max_codepoint=383)
 
 def names() -> st.SearchStrategy[str]:
     """
@@ -99,19 +51,9 @@ def names() -> st.SearchStrategy[str]:
     --------
     :ref:`testing.hypothesis`_
     """
-    return st.text(
-        _readable_characters,
-        min_size=1,
-        max_size=5,
-    )
+    pass
 
-
-def dimension_names(
-    *,
-    name_strategy=names(),
-    min_dims: int = 0,
-    max_dims: int = 3,
-) -> st.SearchStrategy[list[Hashable]]:
+def dimension_names(*, name_strategy=names(), min_dims: int=0, max_dims: int=3) -> st.SearchStrategy[list[Hashable]]:
     """
     Generates an arbitrary list of valid dimension names.
 
@@ -126,23 +68,9 @@ def dimension_names(
     max_dims
         Maximum number of dimensions in generated list.
     """
+    pass
 
-    return st.lists(
-        elements=name_strategy,
-        min_size=min_dims,
-        max_size=max_dims,
-        unique=True,
-    )
-
-
-def dimension_sizes(
-    *,
-    dim_names: st.SearchStrategy[Hashable] = names(),
-    min_dims: int = 0,
-    max_dims: int = 3,
-    min_side: int = 1,
-    max_side: Union[int, None] = None,
-) -> st.SearchStrategy[Mapping[Hashable, int]]:
+def dimension_sizes(*, dim_names: st.SearchStrategy[Hashable]=names(), min_dims: int=0, max_dims: int=3, min_side: int=1, max_side: Union[int, None]=None) -> st.SearchStrategy[Mapping[Hashable, int]]:
     """
     Generates an arbitrary mapping from dimension names to lengths.
 
@@ -170,36 +98,12 @@ def dimension_sizes(
     --------
     :ref:`testing.hypothesis`_
     """
-
-    if max_side is None:
-        max_side = min_side + 3
-
-    return st.dictionaries(
-        keys=dim_names,
-        values=st.integers(min_value=min_side, max_value=max_side),
-        min_size=min_dims,
-        max_size=max_dims,
-    )
-
-
-_readable_strings = st.text(
-    _readable_characters,
-    max_size=5,
-)
+    pass
+_readable_strings = st.text(_readable_characters, max_size=5)
 _attr_keys = _readable_strings
-_small_arrays = npst.arrays(
-    shape=npst.array_shapes(
-        max_side=2,
-        max_dims=2,
-    ),
-    dtype=npst.scalar_dtypes()
-    | npst.byte_string_dtypes()
-    | npst.unicode_string_dtypes(),
-)
+_small_arrays = npst.arrays(shape=npst.array_shapes(max_side=2, max_dims=2), dtype=npst.scalar_dtypes() | npst.byte_string_dtypes() | npst.unicode_string_dtypes())
 _attr_values = st.none() | st.booleans() | _readable_strings | _small_arrays
-
 simple_attrs = st.dictionaries(_attr_keys, _attr_values)
-
 
 def attrs() -> st.SearchStrategy[Mapping[Hashable, Any]]:
     """
@@ -213,25 +117,10 @@ def attrs() -> st.SearchStrategy[Mapping[Hashable, Any]]:
     --------
     :ref:`testing.hypothesis`_
     """
-    return st.recursive(
-        st.dictionaries(_attr_keys, _attr_values),
-        lambda children: st.dictionaries(_attr_keys, children),
-        max_leaves=3,
-    )
-
+    pass
 
 @st.composite
-def variables(
-    draw: st.DrawFn,
-    *,
-    array_strategy_fn: Union[ArrayStrategyFn, None] = None,
-    dims: Union[
-        st.SearchStrategy[Union[Sequence[Hashable], Mapping[Hashable, int]]],
-        None,
-    ] = None,
-    dtype: st.SearchStrategy[np.dtype] = supported_dtypes(),
-    attrs: st.SearchStrategy[Mapping] = attrs(),
-) -> xr.Variable:
+def variables(draw: st.DrawFn, *, array_strategy_fn: Union[ArrayStrategyFn, None]=None, dims: Union[st.SearchStrategy[Union[Sequence[Hashable], Mapping[Hashable, int]]], None]=None, dtype: st.SearchStrategy[np.dtype]=supported_dtypes(), attrs: st.SearchStrategy[Mapping]=attrs()) -> xr.Variable:
     """
     Generates arbitrary xarray.Variable objects.
 
@@ -313,108 +202,10 @@ def variables(
     --------
     :ref:`testing.hypothesis`_
     """
-
-    if not isinstance(dims, st.SearchStrategy) and dims is not None:
-        raise InvalidArgument(
-            f"dims must be provided as a hypothesis.strategies.SearchStrategy object (or None), but got type {type(dims)}. "
-            "To specify fixed contents, use hypothesis.strategies.just()."
-        )
-    if not isinstance(dtype, st.SearchStrategy) and dtype is not None:
-        raise InvalidArgument(
-            f"dtype must be provided as a hypothesis.strategies.SearchStrategy object (or None), but got type {type(dtype)}. "
-            "To specify fixed contents, use hypothesis.strategies.just()."
-        )
-    if not isinstance(attrs, st.SearchStrategy) and attrs is not None:
-        raise InvalidArgument(
-            f"attrs must be provided as a hypothesis.strategies.SearchStrategy object (or None), but got type {type(attrs)}. "
-            "To specify fixed contents, use hypothesis.strategies.just()."
-        )
-
-    _array_strategy_fn: ArrayStrategyFn
-    if array_strategy_fn is None:
-        # For some reason if I move the default value to the function signature definition mypy incorrectly says the ignore is no longer necessary, making it impossible to satisfy mypy
-        _array_strategy_fn = npst.arrays  # type: ignore[assignment]  # npst.arrays has extra kwargs that we aren't using later
-    elif not callable(array_strategy_fn):
-        raise InvalidArgument(
-            "array_strategy_fn must be a Callable that accepts the kwargs dtype and shape and returns a hypothesis "
-            "strategy which generates corresponding array-like objects."
-        )
-    else:
-        _array_strategy_fn = (
-            array_strategy_fn  # satisfy mypy that this new variable cannot be None
-        )
-
-    _dtype = draw(dtype)
-
-    if dims is not None:
-        # generate dims first then draw data to match
-        _dims = draw(dims)
-        if isinstance(_dims, Sequence):
-            dim_names = list(_dims)
-            valid_shapes = npst.array_shapes(min_dims=len(_dims), max_dims=len(_dims))
-            _shape = draw(valid_shapes)
-            array_strategy = _array_strategy_fn(shape=_shape, dtype=_dtype)
-        elif isinstance(_dims, (Mapping, dict)):
-            # should be a mapping of form {dim_names: lengths}
-            dim_names, _shape = list(_dims.keys()), tuple(_dims.values())
-            array_strategy = _array_strategy_fn(shape=_shape, dtype=_dtype)
-        else:
-            raise InvalidArgument(
-                f"Invalid type returned by dims strategy - drew an object of type {type(dims)}"
-            )
-    else:
-        # nothing provided, so generate everything consistently
-        # We still generate the shape first here just so that we always pass shape to array_strategy_fn
-        _shape = draw(npst.array_shapes())
-        array_strategy = _array_strategy_fn(shape=_shape, dtype=_dtype)
-        dim_names = draw(dimension_names(min_dims=len(_shape), max_dims=len(_shape)))
-
-    _data = draw(array_strategy)
-
-    if _data.shape != _shape:
-        raise ValueError(
-            "array_strategy_fn returned an array object with a different shape than it was passed."
-            f"Passed {_shape}, but returned {_data.shape}."
-            "Please either specify a consistent shape via the dims kwarg or ensure the array_strategy_fn callable "
-            "obeys the shape argument passed to it."
-        )
-    if _data.dtype != _dtype:
-        raise ValueError(
-            "array_strategy_fn returned an array object with a different dtype than it was passed."
-            f"Passed {_dtype}, but returned {_data.dtype}"
-            "Please either specify a consistent dtype via the dtype kwarg or ensure the array_strategy_fn callable "
-            "obeys the dtype argument passed to it."
-        )
-
-    return xr.Variable(dims=dim_names, data=_data, attrs=draw(attrs))
-
-
-@overload
-def unique_subset_of(
-    objs: Sequence[Hashable],
-    *,
-    min_size: int = 0,
-    max_size: Union[int, None] = None,
-) -> st.SearchStrategy[Sequence[Hashable]]: ...
-
-
-@overload
-def unique_subset_of(
-    objs: Mapping[Hashable, Any],
-    *,
-    min_size: int = 0,
-    max_size: Union[int, None] = None,
-) -> st.SearchStrategy[Mapping[Hashable, Any]]: ...
-
+    pass
 
 @st.composite
-def unique_subset_of(
-    draw: st.DrawFn,
-    objs: Union[Sequence[Hashable], Mapping[Hashable, Any]],
-    *,
-    min_size: int = 0,
-    max_size: Union[int, None] = None,
-) -> Union[Sequence[Hashable], Mapping[Hashable, Any]]:
+def unique_subset_of(draw: st.DrawFn, objs: Union[Sequence[Hashable], Mapping[Hashable, Any]], *, min_size: int=0, max_size: Union[int, None]=None) -> Union[Sequence[Hashable], Mapping[Hashable, Any]]:
     """
     Return a strategy which generates a unique subset of the given objects.
 
@@ -448,25 +239,4 @@ def unique_subset_of(
     --------
     :ref:`testing.hypothesis`_
     """
-    if not isinstance(objs, Iterable):
-        raise TypeError(
-            f"Object to sample from must be an Iterable or a Mapping, but received type {type(objs)}"
-        )
-
-    if len(objs) == 0:
-        raise ValueError("Can't sample from a length-zero object.")
-
-    keys = list(objs.keys()) if isinstance(objs, Mapping) else objs
-
-    subset_keys = draw(
-        st.lists(
-            st.sampled_from(keys),
-            unique=True,
-            min_size=min_size,
-            max_size=max_size,
-        )
-    )
-
-    return (
-        {k: objs[k] for k in subset_keys} if isinstance(objs, Mapping) else subset_keys
-    )
+    pass

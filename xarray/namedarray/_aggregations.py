@@ -1,35 +1,14 @@
 """Mixin classes with reduction operations."""
-
-# This file was generated using xarray.util.generate_aggregations. Do not edit manually.
-
 from __future__ import annotations
-
 from collections.abc import Sequence
 from typing import Any, Callable
-
 from xarray.core import duck_array_ops
 from xarray.core.types import Dims, Self
-
 
 class NamedArrayAggregations:
     __slots__ = ()
 
-    def reduce(
-        self,
-        func: Callable[..., Any],
-        dim: Dims = None,
-        *,
-        axis: int | Sequence[int] | None = None,
-        keepdims: bool = False,
-        **kwargs: Any,
-    ) -> Self:
-        raise NotImplementedError()
-
-    def count(
-        self,
-        dim: Dims = None,
-        **kwargs: Any,
-    ) -> Self:
+    def count(self, dim: Dims=None, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``count`` along some dimension(s).
 
@@ -73,17 +52,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray ()> Size: 8B
         array(5)
         """
-        return self.reduce(
-            duck_array_ops.count,
-            dim=dim,
-            **kwargs,
-        )
+        pass
 
-    def all(
-        self,
-        dim: Dims = None,
-        **kwargs: Any,
-    ) -> Self:
+    def all(self, dim: Dims=None, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``all`` along some dimension(s).
 
@@ -127,17 +98,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray ()> Size: 1B
         array(False)
         """
-        return self.reduce(
-            duck_array_ops.array_all,
-            dim=dim,
-            **kwargs,
-        )
+        pass
 
-    def any(
-        self,
-        dim: Dims = None,
-        **kwargs: Any,
-    ) -> Self:
+    def any(self, dim: Dims=None, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``any`` along some dimension(s).
 
@@ -181,19 +144,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray ()> Size: 1B
         array(True)
         """
-        return self.reduce(
-            duck_array_ops.array_any,
-            dim=dim,
-            **kwargs,
-        )
+        pass
 
-    def max(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def max(self, dim: Dims=None, *, skipna: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``max`` along some dimension(s).
 
@@ -248,20 +201,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray ()> Size: 8B
         array(nan)
         """
-        return self.reduce(
-            duck_array_ops.max,
-            dim=dim,
-            skipna=skipna,
-            **kwargs,
-        )
+        pass
 
-    def min(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def min(self, dim: Dims=None, *, skipna: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``min`` along some dimension(s).
 
@@ -316,20 +258,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray ()> Size: 8B
         array(nan)
         """
-        return self.reduce(
-            duck_array_ops.min,
-            dim=dim,
-            skipna=skipna,
-            **kwargs,
-        )
+        pass
 
-    def mean(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def mean(self, dim: Dims=None, *, skipna: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``mean`` along some dimension(s).
 
@@ -388,21 +319,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray ()> Size: 8B
         array(nan)
         """
-        return self.reduce(
-            duck_array_ops.mean,
-            dim=dim,
-            skipna=skipna,
-            **kwargs,
-        )
+        pass
 
-    def prod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def prod(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``prod`` along some dimension(s).
 
@@ -473,22 +392,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray ()> Size: 8B
         array(0.)
         """
-        return self.reduce(
-            duck_array_ops.prod,
-            dim=dim,
-            skipna=skipna,
-            min_count=min_count,
-            **kwargs,
-        )
+        pass
 
-    def sum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        min_count: int | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def sum(self, dim: Dims=None, *, skipna: bool | None=None, min_count: int | None=None, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``sum`` along some dimension(s).
 
@@ -559,22 +465,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray ()> Size: 8B
         array(8.)
         """
-        return self.reduce(
-            duck_array_ops.sum,
-            dim=dim,
-            skipna=skipna,
-            min_count=min_count,
-            **kwargs,
-        )
+        pass
 
-    def std(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        **kwargs: Any,
-    ) -> Self:
+    def std(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``std`` along some dimension(s).
 
@@ -642,22 +535,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray ()> Size: 8B
         array(1.14017543)
         """
-        return self.reduce(
-            duck_array_ops.std,
-            dim=dim,
-            skipna=skipna,
-            ddof=ddof,
-            **kwargs,
-        )
+        pass
 
-    def var(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        ddof: int = 0,
-        **kwargs: Any,
-    ) -> Self:
+    def var(self, dim: Dims=None, *, skipna: bool | None=None, ddof: int=0, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``var`` along some dimension(s).
 
@@ -725,21 +605,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray ()> Size: 8B
         array(1.3)
         """
-        return self.reduce(
-            duck_array_ops.var,
-            dim=dim,
-            skipna=skipna,
-            ddof=ddof,
-            **kwargs,
-        )
+        pass
 
-    def median(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def median(self, dim: Dims=None, *, skipna: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``median`` along some dimension(s).
 
@@ -798,20 +666,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray ()> Size: 8B
         array(nan)
         """
-        return self.reduce(
-            duck_array_ops.median,
-            dim=dim,
-            skipna=skipna,
-            **kwargs,
-        )
+        pass
 
-    def cumsum(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def cumsum(self, dim: Dims=None, *, skipna: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``cumsum`` along some dimension(s).
 
@@ -870,20 +727,9 @@ class NamedArrayAggregations:
         <xarray.NamedArray (x: 6)> Size: 48B
         array([ 1.,  3.,  6.,  6.,  8., nan])
         """
-        return self.reduce(
-            duck_array_ops.cumsum,
-            dim=dim,
-            skipna=skipna,
-            **kwargs,
-        )
+        pass
 
-    def cumprod(
-        self,
-        dim: Dims = None,
-        *,
-        skipna: bool | None = None,
-        **kwargs: Any,
-    ) -> Self:
+    def cumprod(self, dim: Dims=None, *, skipna: bool | None=None, **kwargs: Any) -> Self:
         """
         Reduce this NamedArray's data by applying ``cumprod`` along some dimension(s).
 
@@ -942,9 +788,4 @@ class NamedArrayAggregations:
         <xarray.NamedArray (x: 6)> Size: 48B
         array([ 1.,  2.,  6.,  0.,  0., nan])
         """
-        return self.reduce(
-            duck_array_ops.cumprod,
-            dim=dim,
-            skipna=skipna,
-            **kwargs,
-        )
+        pass

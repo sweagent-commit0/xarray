@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import logging
 import os
 import time
@@ -7,28 +6,19 @@ import traceback
 from collections.abc import Iterable
 from glob import glob
 from typing import TYPE_CHECKING, Any, ClassVar
-
 import numpy as np
-
 from xarray.conventions import cf_encoder
 from xarray.core import indexing
 from xarray.core.utils import FrozenDict, NdimSizeLenMixin, is_remote_uri
 from xarray.namedarray.parallelcompat import get_chunked_array_type
 from xarray.namedarray.pycompat import is_chunked_array
-
 if TYPE_CHECKING:
     from io import BufferedIOBase
-
     from xarray.core.dataset import Dataset
     from xarray.core.datatree import DataTree
     from xarray.core.types import NestedSequence
-
-# Create a logger object, but don't add any handlers. Leave that to user code.
 logger = logging.getLogger(__name__)
-
-
-NONE_VAR_NAME = "__values__"
-
+NONE_VAR_NAME = '__values__'
 
 def _normalize_path(path):
     """
@@ -49,18 +39,9 @@ def _normalize_path(path):
     >>> print([type(p) for p in (paths_str,)])
     [<class 'str'>]
     """
-    if isinstance(path, os.PathLike):
-        path = os.fspath(path)
+    pass
 
-    if isinstance(path, str) and not is_remote_uri(path):
-        path = os.path.abspath(os.path.expanduser(path))
-
-    return path
-
-
-def _find_absolute_paths(
-    paths: str | os.PathLike | NestedSequence[str | os.PathLike], **kwargs
-) -> list[str]:
+def _find_absolute_paths(paths: str | os.PathLike | NestedSequence[str | os.PathLike], **kwargs) -> list[str]:
     """
     Find absolute paths from the pattern.
 
@@ -81,72 +62,11 @@ def _find_absolute_paths(
     >>> [Path(p).name for p in paths]
     ['common.py']
     """
-    if isinstance(paths, str):
-        if is_remote_uri(paths) and kwargs.get("engine", None) == "zarr":
-            try:
-                from fsspec.core import get_fs_token_paths
-            except ImportError as e:
-                raise ImportError(
-                    "The use of remote URLs for opening zarr requires the package fsspec"
-                ) from e
-
-            fs, _, _ = get_fs_token_paths(
-                paths,
-                mode="rb",
-                storage_options=kwargs.get("backend_kwargs", {}).get(
-                    "storage_options", {}
-                ),
-                expand=False,
-            )
-            tmp_paths = fs.glob(fs._strip_protocol(paths))  # finds directories
-            paths = [fs.get_mapper(path) for path in tmp_paths]
-        elif is_remote_uri(paths):
-            raise ValueError(
-                "cannot do wild-card matching for paths that are remote URLs "
-                f"unless engine='zarr' is specified. Got paths: {paths}. "
-                "Instead, supply paths as an explicit list of strings."
-            )
-        else:
-            paths = sorted(glob(_normalize_path(paths)))
-    elif isinstance(paths, os.PathLike):
-        paths = [os.fspath(paths)]
-    else:
-        paths = [os.fspath(p) if isinstance(p, os.PathLike) else p for p in paths]
-
-    return paths
-
-
-def _encode_variable_name(name):
-    if name is None:
-        name = NONE_VAR_NAME
-    return name
-
-
-def _decode_variable_name(name):
-    if name == NONE_VAR_NAME:
-        name = None
-    return name
-
-
-def _iter_nc_groups(root, parent="/"):
-    from xarray.core.treenode import NodePath
-
-    parent = NodePath(parent)
-    for path, group in root.groups.items():
-        gpath = parent / path
-        yield str(gpath)
-        yield from _iter_nc_groups(group, parent=gpath)
-
+    pass
 
 def find_root_and_group(ds):
     """Find the root and group name of a netCDF4/h5netcdf dataset."""
-    hierarchy = ()
-    while ds.parent is not None:
-        hierarchy = (ds.name.split("/")[-1],) + hierarchy
-        ds = ds.parent
-    group = "/" + "/".join(hierarchy)
-    return ds, group
-
+    pass
 
 def robust_getitem(array, key, catch=Exception, max_retries=6, initial_delay=500):
     """
@@ -156,45 +76,13 @@ def robust_getitem(array, key, catch=Exception, max_retries=6, initial_delay=500
     With the default settings, the maximum delay will be in the range of 32-64
     seconds.
     """
-    assert max_retries >= 0
-    for n in range(max_retries + 1):
-        try:
-            return array[key]
-        except catch:
-            if n == max_retries:
-                raise
-            base_delay = initial_delay * 2**n
-            next_delay = base_delay + np.random.randint(base_delay)
-            msg = (
-                f"getitem failed, waiting {next_delay} ms before trying again "
-                f"({max_retries - n} tries remaining). Full traceback: {traceback.format_exc()}"
-            )
-            logger.debug(msg)
-            time.sleep(1e-3 * next_delay)
-
+    pass
 
 class BackendArray(NdimSizeLenMixin, indexing.ExplicitlyIndexed):
     __slots__ = ()
 
-    def get_duck_array(self, dtype: np.typing.DTypeLike = None):
-        key = indexing.BasicIndexer((slice(None),) * self.ndim)
-        return self[key]  # type: ignore [index]
-
-
 class AbstractDataStore:
     __slots__ = ()
-
-    def get_dimensions(self):  # pragma: no cover
-        raise NotImplementedError()
-
-    def get_attrs(self):  # pragma: no cover
-        raise NotImplementedError()
-
-    def get_variables(self):  # pragma: no cover
-        raise NotImplementedError()
-
-    def get_encoding(self):
-        return {}
 
     def load(self):
         """
@@ -217,13 +105,6 @@ class AbstractDataStore:
         This function will be called anytime variables or attributes
         are requested, so care should be taken to make sure its fast.
         """
-        variables = FrozenDict(
-            (_decode_variable_name(k), v) for k, v in self.get_variables().items()
-        )
-        attributes = FrozenDict(self.get_attrs())
-        return variables, attributes
-
-    def close(self):
         pass
 
     def __enter__(self):
@@ -232,52 +113,14 @@ class AbstractDataStore:
     def __exit__(self, exception_type, exception_value, traceback):
         self.close()
 
-
 class ArrayWriter:
-    __slots__ = ("sources", "targets", "regions", "lock")
+    __slots__ = ('sources', 'targets', 'regions', 'lock')
 
     def __init__(self, lock=None):
         self.sources = []
         self.targets = []
         self.regions = []
         self.lock = lock
-
-    def add(self, source, target, region=None):
-        if is_chunked_array(source):
-            self.sources.append(source)
-            self.targets.append(target)
-            self.regions.append(region)
-        else:
-            if region:
-                target[region] = source
-            else:
-                target[...] = source
-
-    def sync(self, compute=True, chunkmanager_store_kwargs=None):
-        if self.sources:
-            chunkmanager = get_chunked_array_type(*self.sources)
-
-            # TODO: consider wrapping targets with dask.delayed, if this makes
-            # for any discernible difference in performance, e.g.,
-            # targets = [dask.delayed(t) for t in self.targets]
-
-            if chunkmanager_store_kwargs is None:
-                chunkmanager_store_kwargs = {}
-
-            delayed_store = chunkmanager.store(
-                self.sources,
-                self.targets,
-                lock=self.lock,
-                compute=compute,
-                flush=True,
-                regions=self.regions,
-                **chunkmanager_store_kwargs,
-            )
-            self.sources = []
-            self.targets = []
-            self.regions = []
-            return delayed_store
-
 
 class AbstractWritableDataStore(AbstractDataStore):
     __slots__ = ()
@@ -299,26 +142,15 @@ class AbstractWritableDataStore(AbstractDataStore):
         attributes : dict-like
 
         """
-        variables = {k: self.encode_variable(v) for k, v in variables.items()}
-        attributes = {k: self.encode_attribute(v) for k, v in attributes.items()}
-        return variables, attributes
+        pass
 
     def encode_variable(self, v):
         """encode one variable"""
-        return v
+        pass
 
     def encode_attribute(self, a):
         """encode one attribute"""
-        return a
-
-    def set_dimension(self, dim, length):  # pragma: no cover
-        raise NotImplementedError()
-
-    def set_attribute(self, k, v):  # pragma: no cover
-        raise NotImplementedError()
-
-    def set_variable(self, k, v):  # pragma: no cover
-        raise NotImplementedError()
+        pass
 
     def store_dataset(self, dataset):
         """
@@ -327,16 +159,9 @@ class AbstractWritableDataStore(AbstractDataStore):
         so here we pass the whole dataset in instead of doing
         dataset.variables
         """
-        self.store(dataset, dataset.attrs)
+        pass
 
-    def store(
-        self,
-        variables,
-        attributes,
-        check_encoding_set=frozenset(),
-        writer=None,
-        unlimited_dims=None,
-    ):
+    def store(self, variables, attributes, check_encoding_set=frozenset(), writer=None, unlimited_dims=None):
         """
         Top level method for putting data on this store, this method:
           - encodes variables/attributes
@@ -357,16 +182,7 @@ class AbstractWritableDataStore(AbstractDataStore):
             List of dimension names that should be treated as unlimited
             dimensions.
         """
-        if writer is None:
-            writer = ArrayWriter()
-
-        variables, attributes = self.encode(variables, attributes)
-
-        self.set_attributes(attributes)
-        self.set_dimensions(variables, unlimited_dims=unlimited_dims)
-        self.set_variables(
-            variables, check_encoding_set, writer, unlimited_dims=unlimited_dims
-        )
+        pass
 
     def set_attributes(self, attributes):
         """
@@ -378,8 +194,7 @@ class AbstractWritableDataStore(AbstractDataStore):
         attributes : dict-like
             Dictionary of key/value (attribute name / attribute) pairs
         """
-        for k, v in attributes.items():
-            self.set_attribute(k, v)
+        pass
 
     def set_variables(self, variables, check_encoding_set, writer, unlimited_dims=None):
         """
@@ -398,15 +213,7 @@ class AbstractWritableDataStore(AbstractDataStore):
             List of dimension names that should be treated as unlimited
             dimensions.
         """
-
-        for vn, v in variables.items():
-            name = _encode_variable_name(vn)
-            check = vn in check_encoding_set
-            target, source = self.prepare_variable(
-                name, v, check, unlimited_dims=unlimited_dims
-            )
-
-            writer.add(source, target)
+        pass
 
     def set_dimensions(self, variables, unlimited_dims=None):
         """
@@ -421,39 +228,10 @@ class AbstractWritableDataStore(AbstractDataStore):
             List of dimension names that should be treated as unlimited
             dimensions.
         """
-        if unlimited_dims is None:
-            unlimited_dims = set()
-
-        existing_dims = self.get_dimensions()
-
-        dims = {}
-        for v in unlimited_dims:  # put unlimited_dims first
-            dims[v] = None
-        for v in variables.values():
-            dims.update(dict(zip(v.dims, v.shape)))
-
-        for dim, length in dims.items():
-            if dim in existing_dims and length != existing_dims[dim]:
-                raise ValueError(
-                    "Unable to update size for existing dimension"
-                    f"{dim!r} ({length} != {existing_dims[dim]})"
-                )
-            elif dim not in existing_dims:
-                is_unlimited = dim in unlimited_dims
-                self.set_dimension(dim, length, is_unlimited)
-
+        pass
 
 class WritableCFDataStore(AbstractWritableDataStore):
     __slots__ = ()
-
-    def encode(self, variables, attributes):
-        # All NetCDF files get CF encoded by default, without this attempting
-        # to write times, for example, would fail.
-        variables, attributes = cf_encoder(variables, attributes)
-        variables = {k: self.encode_variable(v) for k, v in variables.items()}
-        attributes = {k: self.encode_attribute(v) for k, v in attributes.items()}
-        return variables, attributes
-
 
 class BackendEntrypoint:
     """
@@ -488,53 +266,33 @@ class BackendEntrypoint:
         A string with the URL to the backend's documentation.
         The setting of this attribute is not mandatory.
     """
-
     open_dataset_parameters: ClassVar[tuple | None] = None
-    description: ClassVar[str] = ""
-    url: ClassVar[str] = ""
+    description: ClassVar[str] = ''
+    url: ClassVar[str] = ''
 
     def __repr__(self) -> str:
-        txt = f"<{type(self).__name__}>"
+        txt = f'<{type(self).__name__}>'
         if self.description:
-            txt += f"\n  {self.description}"
+            txt += f'\n  {self.description}'
         if self.url:
-            txt += f"\n  Learn more at {self.url}"
+            txt += f'\n  Learn more at {self.url}'
         return txt
 
-    def open_dataset(
-        self,
-        filename_or_obj: str | os.PathLike[Any] | BufferedIOBase | AbstractDataStore,
-        *,
-        drop_variables: str | Iterable[str] | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def open_dataset(self, filename_or_obj: str | os.PathLike[Any] | BufferedIOBase | AbstractDataStore, *, drop_variables: str | Iterable[str] | None=None, **kwargs: Any) -> Dataset:
         """
         Backend open_dataset method used by Xarray in :py:func:`~xarray.open_dataset`.
         """
+        pass
 
-        raise NotImplementedError()
-
-    def guess_can_open(
-        self,
-        filename_or_obj: str | os.PathLike[Any] | BufferedIOBase | AbstractDataStore,
-    ) -> bool:
+    def guess_can_open(self, filename_or_obj: str | os.PathLike[Any] | BufferedIOBase | AbstractDataStore) -> bool:
         """
         Backend open_dataset method used by Xarray in :py:func:`~xarray.open_dataset`.
         """
+        pass
 
-        return False
-
-    def open_datatree(
-        self,
-        filename_or_obj: str | os.PathLike[Any] | BufferedIOBase | AbstractDataStore,
-        **kwargs: Any,
-    ) -> DataTree:
+    def open_datatree(self, filename_or_obj: str | os.PathLike[Any] | BufferedIOBase | AbstractDataStore, **kwargs: Any) -> DataTree:
         """
         Backend open_datatree method used by Xarray in :py:func:`~xarray.open_datatree`.
         """
-
-        raise NotImplementedError()
-
-
-# mapping of engine name to (module name, BackendEntrypoint Class)
+        pass
 BACKEND_ENTRYPOINTS: dict[str, tuple[str | None, type[BackendEntrypoint]]] = {}

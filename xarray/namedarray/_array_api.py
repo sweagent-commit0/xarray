@@ -1,39 +1,11 @@
 from __future__ import annotations
-
 from types import ModuleType
 from typing import Any
-
 import numpy as np
-
-from xarray.namedarray._typing import (
-    Default,
-    _arrayapi,
-    _Axes,
-    _Axis,
-    _default,
-    _Dim,
-    _DType,
-    _ScalarType,
-    _ShapeType,
-    _SupportsImag,
-    _SupportsReal,
-)
+from xarray.namedarray._typing import Default, _arrayapi, _Axes, _Axis, _default, _Dim, _DType, _ScalarType, _ShapeType, _SupportsImag, _SupportsReal
 from xarray.namedarray.core import NamedArray
 
-
-def _get_data_namespace(x: NamedArray[Any, Any]) -> ModuleType:
-    if isinstance(x._data, _arrayapi):
-        return x._data.__array_namespace__()
-
-    return np
-
-
-# %% Creation Functions
-
-
-def astype(
-    x: NamedArray[_ShapeType, Any], dtype: _DType, /, *, copy: bool = True
-) -> NamedArray[_ShapeType, _DType]:
+def astype(x: NamedArray[_ShapeType, Any], dtype: _DType, /, *, copy: bool=True) -> NamedArray[_ShapeType, _DType]:
     """
     Copies an array to a specified data type irrespective of Type Promotion Rules rules.
 
@@ -67,20 +39,9 @@ def astype(
     <xarray.NamedArray (x: 2)> Size: 8B
     array([1, 2], dtype=int32)
     """
-    if isinstance(x._data, _arrayapi):
-        xp = x._data.__array_namespace__()
-        return x._new(data=xp.astype(x._data, dtype, copy=copy))
+    pass
 
-    # np.astype doesn't exist yet:
-    return x._new(data=x._data.astype(dtype, copy=copy))  # type: ignore[attr-defined]
-
-
-# %% Elementwise Functions
-
-
-def imag(
-    x: NamedArray[_ShapeType, np.dtype[_SupportsImag[_ScalarType]]], /  # type: ignore[type-var]
-) -> NamedArray[_ShapeType, np.dtype[_ScalarType]]:
+def imag(x: NamedArray[_ShapeType, np.dtype[_SupportsImag[_ScalarType]]], /) -> NamedArray[_ShapeType, np.dtype[_ScalarType]]:
     """
     Returns the imaginary component of a complex number for each element x_i of the
     input array x.
@@ -105,14 +66,9 @@ def imag(
     <xarray.NamedArray (x: 2)> Size: 16B
     array([2., 4.])
     """
-    xp = _get_data_namespace(x)
-    out = x._new(data=xp.imag(x._data))
-    return out
+    pass
 
-
-def real(
-    x: NamedArray[_ShapeType, np.dtype[_SupportsReal[_ScalarType]]], /  # type: ignore[type-var]
-) -> NamedArray[_ShapeType, np.dtype[_ScalarType]]:
+def real(x: NamedArray[_ShapeType, np.dtype[_SupportsReal[_ScalarType]]], /) -> NamedArray[_ShapeType, np.dtype[_ScalarType]]:
     """
     Returns the real component of a complex number for each element x_i of the
     input array x.
@@ -137,19 +93,9 @@ def real(
     <xarray.NamedArray (x: 2)> Size: 16B
     array([1., 2.])
     """
-    xp = _get_data_namespace(x)
-    out = x._new(data=xp.real(x._data))
-    return out
+    pass
 
-
-# %% Manipulation functions
-def expand_dims(
-    x: NamedArray[Any, _DType],
-    /,
-    *,
-    dim: _Dim | Default = _default,
-    axis: _Axis = 0,
-) -> NamedArray[Any, _DType]:
+def expand_dims(x: NamedArray[Any, _DType], /, *, dim: _Dim | Default=_default, axis: _Axis=0) -> NamedArray[Any, _DType]:
     """
     Expands the shape of an array by inserting a new dimension of size one at the
     position specified by dims.
@@ -180,15 +126,7 @@ def expand_dims(
     array([[[1., 2.],
             [3., 4.]]])
     """
-    xp = _get_data_namespace(x)
-    dims = x.dims
-    if dim is _default:
-        dim = f"dim_{len(dims)}"
-    d = list(dims)
-    d.insert(axis, dim)
-    out = x._new(dims=tuple(d), data=xp.expand_dims(x._data, axis=axis))
-    return out
-
+    pass
 
 def permute_dims(x: NamedArray[Any, _DType], axes: _Axes) -> NamedArray[Any, _DType]:
     """
@@ -208,12 +146,4 @@ def permute_dims(x: NamedArray[Any, _DType], axes: _Axes) -> NamedArray[Any, _DT
         data type as x.
 
     """
-
-    dims = x.dims
-    new_dims = tuple(dims[i] for i in axes)
-    if isinstance(x._data, _arrayapi):
-        xp = _get_data_namespace(x)
-        out = x._new(dims=new_dims, data=xp.permute_dims(x._data, axes))
-    else:
-        out = x._new(dims=new_dims, data=x._data.transpose(axes))  # type: ignore[attr-defined]
-    return out
+    pass

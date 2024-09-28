@@ -1,15 +1,11 @@
 from __future__ import annotations
-
 import warnings
-
 from xarray.core.dataarray import DataArray
 from xarray.core.dataset import Dataset
 from xarray.core.datatree import DataTree
 
-
 class AccessorRegistrationWarning(Warning):
     """Warning for conflicts in accessor registration."""
-
 
 class _CachedAccessor:
     """Custom property-like object (descriptor) for caching accessors."""
@@ -20,47 +16,21 @@ class _CachedAccessor:
 
     def __get__(self, obj, cls):
         if obj is None:
-            # we're accessing the attribute of the class, i.e., Dataset.geo
             return self._accessor
-
-        # Use the same dict as @pandas.util.cache_readonly.
-        # It must be explicitly declared in obj.__slots__.
         try:
             cache = obj._cache
         except AttributeError:
             cache = obj._cache = {}
-
         try:
             return cache[self._name]
         except KeyError:
             pass
-
         try:
             accessor_obj = self._accessor(obj)
         except AttributeError:
-            # __getattr__ on data object will swallow any AttributeErrors
-            # raised when initializing the accessor, so we need to raise as
-            # something else (GH933):
-            raise RuntimeError(f"error initializing {self._name!r} accessor.")
-
+            raise RuntimeError(f'error initializing {self._name!r} accessor.')
         cache[self._name] = accessor_obj
         return accessor_obj
-
-
-def _register_accessor(name, cls):
-    def decorator(accessor):
-        if hasattr(cls, name):
-            warnings.warn(
-                f"registration of accessor {accessor!r} under name {name!r} for type {cls!r} is "
-                "overriding a preexisting attribute with the same name.",
-                AccessorRegistrationWarning,
-                stacklevel=2,
-            )
-        setattr(cls, name, _CachedAccessor(name, accessor))
-        return accessor
-
-    return decorator
-
 
 def register_dataarray_accessor(name):
     """Register a custom accessor on xarray.DataArray objects.
@@ -75,8 +45,7 @@ def register_dataarray_accessor(name):
     --------
     register_dataset_accessor
     """
-    return _register_accessor(name, DataArray)
-
+    pass
 
 def register_dataset_accessor(name):
     """Register a custom property on xarray.Dataset objects.
@@ -121,8 +90,7 @@ def register_dataset_accessor(name):
     --------
     register_dataarray_accessor
     """
-    return _register_accessor(name, Dataset)
-
+    pass
 
 def register_datatree_accessor(name):
     """Register a custom accessor on DataTree objects.
@@ -138,4 +106,4 @@ def register_datatree_accessor(name):
     xarray.register_dataarray_accessor
     xarray.register_dataset_accessor
     """
-    return _register_accessor(name, DataTree)
+    pass

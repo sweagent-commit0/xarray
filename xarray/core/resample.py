@@ -1,22 +1,14 @@
 from __future__ import annotations
-
 import warnings
 from collections.abc import Hashable, Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Callable
-
-from xarray.core._aggregations import (
-    DataArrayResampleAggregations,
-    DatasetResampleAggregations,
-)
+from xarray.core._aggregations import DataArrayResampleAggregations, DatasetResampleAggregations
 from xarray.core.groupby import DataArrayGroupByBase, DatasetGroupByBase, GroupBy
 from xarray.core.types import Dims, InterpOptions, T_Xarray
-
 if TYPE_CHECKING:
     from xarray.core.dataarray import DataArray
     from xarray.core.dataset import Dataset
-
 from xarray.groupers import RESAMPLE_DIM
-
 
 class Resample(GroupBy[T_Xarray]):
     """An object that extends the `GroupBy` object with additional logic
@@ -32,41 +24,17 @@ class Resample(GroupBy[T_Xarray]):
 
     """
 
-    def __init__(
-        self,
-        *args,
-        dim: Hashable | None = None,
-        resample_dim: Hashable | None = None,
-        **kwargs,
-    ) -> None:
+    def __init__(self, *args, dim: Hashable | None=None, resample_dim: Hashable | None=None, **kwargs) -> None:
         if dim == resample_dim:
-            raise ValueError(
-                f"Proxy resampling dimension ('{resample_dim}') "
-                f"cannot have the same name as actual dimension ('{dim}')!"
-            )
+            raise ValueError(f"Proxy resampling dimension ('{resample_dim}') cannot have the same name as actual dimension ('{dim}')!")
         self._dim = dim
-
         super().__init__(*args, **kwargs)
-
-    def _flox_reduce(
-        self,
-        dim: Dims,
-        keep_attrs: bool | None = None,
-        **kwargs,
-    ) -> T_Xarray:
-        result = super()._flox_reduce(dim=dim, keep_attrs=keep_attrs, **kwargs)
-        result = result.rename({RESAMPLE_DIM: self._group_dim})
-        return result
 
     def _drop_coords(self) -> T_Xarray:
         """Drop non-dimension coordinates along the resampled dimension."""
-        obj = self._obj
-        for k, v in obj.coords.items():
-            if k != self._dim and self._dim in v.dims:
-                obj = obj.drop_vars([k])
-        return obj
+        pass
 
-    def pad(self, tolerance: float | Iterable[float] | str | None = None) -> T_Xarray:
+    def pad(self, tolerance: float | Iterable[float] | str | None=None) -> T_Xarray:
         """Forward fill new values at up-sampled frequency.
 
         Parameters
@@ -83,17 +51,10 @@ class Resample(GroupBy[T_Xarray]):
         -------
         padded : DataArray or Dataset
         """
-        obj = self._drop_coords()
-        (grouper,) = self.groupers
-        return obj.reindex(
-            {self._dim: grouper.full_index}, method="pad", tolerance=tolerance
-        )
-
+        pass
     ffill = pad
 
-    def backfill(
-        self, tolerance: float | Iterable[float] | str | None = None
-    ) -> T_Xarray:
+    def backfill(self, tolerance: float | Iterable[float] | str | None=None) -> T_Xarray:
         """Backward fill new values at up-sampled frequency.
 
         Parameters
@@ -110,17 +71,10 @@ class Resample(GroupBy[T_Xarray]):
         -------
         backfilled : DataArray or Dataset
         """
-        obj = self._drop_coords()
-        (grouper,) = self.groupers
-        return obj.reindex(
-            {self._dim: grouper.full_index}, method="backfill", tolerance=tolerance
-        )
-
+        pass
     bfill = backfill
 
-    def nearest(
-        self, tolerance: float | Iterable[float] | str | None = None
-    ) -> T_Xarray:
+    def nearest(self, tolerance: float | Iterable[float] | str | None=None) -> T_Xarray:
         """Take new values from nearest original coordinate to up-sampled
         frequency coordinates.
 
@@ -138,19 +92,14 @@ class Resample(GroupBy[T_Xarray]):
         -------
         upsampled : DataArray or Dataset
         """
-        obj = self._drop_coords()
-        (grouper,) = self.groupers
-        return obj.reindex(
-            {self._dim: grouper.full_index}, method="nearest", tolerance=tolerance
-        )
+        pass
 
-    def interpolate(self, kind: InterpOptions = "linear", **kwargs) -> T_Xarray:
+    def interpolate(self, kind: InterpOptions='linear', **kwargs) -> T_Xarray:
         """Interpolate up-sampled data using the original data as knots.
 
         Parameters
         ----------
-        kind : {"linear", "nearest", "zero", "slinear", \
-                "quadratic", "cubic", "polynomial"}, default: "linear"
+        kind : {"linear", "nearest", "zero", "slinear",                 "quadratic", "cubic", "polynomial"}, default: "linear"
             The method used to interpolate. The method should be supported by
             the scipy interpolator:
 
@@ -172,38 +121,18 @@ class Resample(GroupBy[T_Xarray]):
         scipy.interpolate.interp1d
 
         """
-        return self._interpolate(kind=kind, **kwargs)
+        pass
 
-    def _interpolate(self, kind="linear", **kwargs) -> T_Xarray:
+    def _interpolate(self, kind='linear', **kwargs) -> T_Xarray:
         """Apply scipy.interpolate.interp1d along resampling dimension."""
-        obj = self._drop_coords()
-        (grouper,) = self.groupers
-        kwargs.setdefault("bounds_error", False)
-        return obj.interp(
-            coords={self._dim: grouper.full_index},
-            assume_sorted=True,
-            method=kind,
-            kwargs=kwargs,
-        )
+        pass
 
-
-# https://github.com/python/mypy/issues/9031
-class DataArrayResample(Resample["DataArray"], DataArrayGroupByBase, DataArrayResampleAggregations):  # type: ignore[misc]
+class DataArrayResample(Resample['DataArray'], DataArrayGroupByBase, DataArrayResampleAggregations):
     """DataArrayGroupBy object specialized to time resampling operations over a
     specified dimension
     """
 
-    def reduce(
-        self,
-        func: Callable[..., Any],
-        dim: Dims = None,
-        *,
-        axis: int | Sequence[int] | None = None,
-        keep_attrs: bool | None = None,
-        keepdims: bool = False,
-        shortcut: bool = True,
-        **kwargs: Any,
-    ) -> DataArray:
+    def reduce(self, func: Callable[..., Any], dim: Dims=None, *, axis: int | Sequence[int] | None=None, keep_attrs: bool | None=None, keepdims: bool=False, shortcut: bool=True, **kwargs: Any) -> DataArray:
         """Reduce the items in this group by applying `func` along the
         pre-defined resampling dimension.
 
@@ -228,23 +157,9 @@ class DataArrayResample(Resample["DataArray"], DataArrayGroupByBase, DataArrayRe
             Array with summarized data and the indicated dimension(s)
             removed.
         """
-        return super().reduce(
-            func=func,
-            dim=dim,
-            axis=axis,
-            keep_attrs=keep_attrs,
-            keepdims=keepdims,
-            shortcut=shortcut,
-            **kwargs,
-        )
+        pass
 
-    def map(
-        self,
-        func: Callable[..., Any],
-        args: tuple[Any, ...] = (),
-        shortcut: bool | None = False,
-        **kwargs: Any,
-    ) -> DataArray:
+    def map(self, func: Callable[..., Any], args: tuple[Any, ...]=(), shortcut: bool | None=False, **kwargs: Any) -> DataArray:
         """Apply a function to each array in the group and concatenate them
         together into a new array.
 
@@ -286,20 +201,7 @@ class DataArrayResample(Resample["DataArray"], DataArrayGroupByBase, DataArrayRe
         applied : DataArray
             The result of splitting, applying and combining this array.
         """
-        # TODO: the argument order for Resample doesn't match that for its parent,
-        # GroupBy
-        combined = super().map(func, shortcut=shortcut, args=args, **kwargs)
-
-        # If the aggregation function didn't drop the original resampling
-        # dimension, then we need to do so before we can rename the proxy
-        # dimension we used.
-        if self._dim in combined.coords:
-            combined = combined.drop_vars([self._dim])
-
-        if RESAMPLE_DIM in combined.dims:
-            combined = combined.rename({RESAMPLE_DIM: self._dim})
-
-        return combined
+        pass
 
     def apply(self, func, args=(), shortcut=None, **kwargs):
         """
@@ -309,12 +211,7 @@ class DataArrayResample(Resample["DataArray"], DataArrayGroupByBase, DataArrayRe
         --------
         DataArrayResample.map
         """
-        warnings.warn(
-            "Resample.apply may be deprecated in the future. Using Resample.map is encouraged",
-            PendingDeprecationWarning,
-            stacklevel=2,
-        )
-        return self.map(func=func, shortcut=shortcut, args=args, **kwargs)
+        pass
 
     def asfreq(self) -> DataArray:
         """Return values of original object at the new up-sampling frequency;
@@ -324,21 +221,12 @@ class DataArrayResample(Resample["DataArray"], DataArrayGroupByBase, DataArrayRe
         -------
         resampled : DataArray
         """
-        self._obj = self._drop_coords()
-        return self.mean(None if self._dim is None else [self._dim])
+        pass
 
-
-# https://github.com/python/mypy/issues/9031
-class DatasetResample(Resample["Dataset"], DatasetGroupByBase, DatasetResampleAggregations):  # type: ignore[misc]
+class DatasetResample(Resample['Dataset'], DatasetGroupByBase, DatasetResampleAggregations):
     """DatasetGroupBy object specialized to resampling a specified dimension"""
 
-    def map(
-        self,
-        func: Callable[..., Any],
-        args: tuple[Any, ...] = (),
-        shortcut: bool | None = None,
-        **kwargs: Any,
-    ) -> Dataset:
+    def map(self, func: Callable[..., Any], args: tuple[Any, ...]=(), shortcut: bool | None=None, **kwargs: Any) -> Dataset:
         """Apply a function over each Dataset in the groups generated for
         resampling and concatenate them together into a new Dataset.
 
@@ -368,20 +256,7 @@ class DatasetResample(Resample["Dataset"], DatasetGroupByBase, DatasetResampleAg
         applied : Dataset
             The result of splitting, applying and combining this dataset.
         """
-        # ignore shortcut if set (for now)
-        applied = (func(ds, *args, **kwargs) for ds in self._iter_grouped())
-        combined = self._combine(applied)
-
-        # If the aggregation function didn't drop the original resampling
-        # dimension, then we need to do so before we can rename the proxy
-        # dimension we used.
-        if self._dim in combined.coords:
-            combined = combined.drop_vars(self._dim)
-
-        if RESAMPLE_DIM in combined.dims:
-            combined = combined.rename({RESAMPLE_DIM: self._dim})
-
-        return combined
+        pass
 
     def apply(self, func, args=(), shortcut=None, **kwargs):
         """
@@ -391,25 +266,9 @@ class DatasetResample(Resample["Dataset"], DatasetGroupByBase, DatasetResampleAg
         --------
         DataSetResample.map
         """
+        pass
 
-        warnings.warn(
-            "Resample.apply may be deprecated in the future. Using Resample.map is encouraged",
-            PendingDeprecationWarning,
-            stacklevel=2,
-        )
-        return self.map(func=func, shortcut=shortcut, args=args, **kwargs)
-
-    def reduce(
-        self,
-        func: Callable[..., Any],
-        dim: Dims = None,
-        *,
-        axis: int | Sequence[int] | None = None,
-        keep_attrs: bool | None = None,
-        keepdims: bool = False,
-        shortcut: bool = True,
-        **kwargs: Any,
-    ) -> Dataset:
+    def reduce(self, func: Callable[..., Any], dim: Dims=None, *, axis: int | Sequence[int] | None=None, keep_attrs: bool | None=None, keepdims: bool=False, shortcut: bool=True, **kwargs: Any) -> Dataset:
         """Reduce the items in this group by applying `func` along the
         pre-defined resampling dimension.
 
@@ -434,15 +293,7 @@ class DatasetResample(Resample["Dataset"], DatasetGroupByBase, DatasetResampleAg
             Array with summarized data and the indicated dimension(s)
             removed.
         """
-        return super().reduce(
-            func=func,
-            dim=dim,
-            axis=axis,
-            keep_attrs=keep_attrs,
-            keepdims=keepdims,
-            shortcut=shortcut,
-            **kwargs,
-        )
+        pass
 
     def asfreq(self) -> Dataset:
         """Return values of original object at the new up-sampling frequency;
@@ -452,5 +303,4 @@ class DatasetResample(Resample["Dataset"], DatasetGroupByBase, DatasetResampleAg
         -------
         resampled : Dataset
         """
-        self._obj = self._drop_coords()
-        return self.mean(None if self._dim is None else [self._dim])
+        pass

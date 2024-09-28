@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import multiprocessing
 import threading
 import uuid
@@ -8,10 +7,6 @@ from collections.abc import Hashable, MutableMapping
 from typing import Any, ClassVar
 from weakref import WeakValueDictionary
 
-
-# SerializableLock is adapted from Dask:
-# https://github.com/dask/dask/blob/74e898f0ec712e8317ba86cc3b9d18b6b9922be0/dask/utils.py#L1160-L1224
-# Used under the terms of Dask's license, see licenses/DASK_LICENSE.
 class SerializableLock:
     """A Serializable per-process Lock
 
@@ -39,14 +34,11 @@ class SerializableLock:
 
     The creation of locks is itself not threadsafe.
     """
-
-    _locks: ClassVar[WeakValueDictionary[Hashable, threading.Lock]] = (
-        WeakValueDictionary()
-    )
+    _locks: ClassVar[WeakValueDictionary[Hashable, threading.Lock]] = WeakValueDictionary()
     token: Hashable
     lock: threading.Lock
 
-    def __init__(self, token: Hashable | None = None):
+    def __init__(self, token: Hashable | None=None):
         self.token = token or str(uuid.uuid4())
         if self.token in SerializableLock._locks:
             self.lock = SerializableLock._locks[self.token]
@@ -54,20 +46,11 @@ class SerializableLock:
             self.lock = threading.Lock()
             SerializableLock._locks[self.token] = self.lock
 
-    def acquire(self, *args, **kwargs):
-        return self.lock.acquire(*args, **kwargs)
-
-    def release(self, *args, **kwargs):
-        return self.lock.release(*args, **kwargs)
-
     def __enter__(self):
         self.lock.__enter__()
 
     def __exit__(self, *args):
         self.lock.__exit__(*args)
-
-    def locked(self):
-        return self.lock.locked()
 
     def __getstate__(self):
         return self.token
@@ -76,34 +59,11 @@ class SerializableLock:
         self.__init__(token)
 
     def __str__(self):
-        return f"<{self.__class__.__name__}: {self.token}>"
-
+        return f'<{self.__class__.__name__}: {self.token}>'
     __repr__ = __str__
-
-
-# Locks used by multiple backends.
-# Neither HDF5 nor the netCDF-C library are thread-safe.
 HDF5_LOCK = SerializableLock()
 NETCDFC_LOCK = SerializableLock()
-
-
 _FILE_LOCKS: MutableMapping[Any, threading.Lock] = weakref.WeakValueDictionary()
-
-
-def _get_threaded_lock(key):
-    try:
-        lock = _FILE_LOCKS[key]
-    except KeyError:
-        lock = _FILE_LOCKS[key] = threading.Lock()
-    return lock
-
-
-def _get_multiprocessing_lock(key):
-    # TODO: make use of the key -- maybe use locket.py?
-    # https://github.com/mwilliamson/locket.py
-    del key  # unused
-    return multiprocessing.Lock()
-
 
 def _get_lock_maker(scheduler=None):
     """Returns an appropriate function for creating resource locks.
@@ -117,24 +77,7 @@ def _get_lock_maker(scheduler=None):
     --------
     dask.utils.get_scheduler_lock
     """
-
-    if scheduler is None:
-        return _get_threaded_lock
-    elif scheduler == "threaded":
-        return _get_threaded_lock
-    elif scheduler == "multiprocessing":
-        return _get_multiprocessing_lock
-    elif scheduler == "distributed":
-        # Lazy import distributed since it is can add a significant
-        # amount of time to import
-        try:
-            from dask.distributed import Lock as DistributedLock
-        except ImportError:
-            DistributedLock = None
-        return DistributedLock
-    else:
-        raise KeyError(scheduler)
-
+    pass
 
 def _get_scheduler(get=None, collection=None) -> str | None:
     """Determine the dask scheduler that is being used.
@@ -145,34 +88,7 @@ def _get_scheduler(get=None, collection=None) -> str | None:
     --------
     dask.base.get_scheduler
     """
-    try:
-        # Fix for bug caused by dask installation that doesn't involve the toolz library
-        # Issue: 4164
-        import dask
-        from dask.base import get_scheduler  # noqa: F401
-
-        actual_get = get_scheduler(get, collection)
-    except ImportError:
-        return None
-
-    try:
-        from dask.distributed import Client
-
-        if isinstance(actual_get.__self__, Client):
-            return "distributed"
-    except (ImportError, AttributeError):
-        pass
-
-    try:
-        # As of dask=2.6, dask.multiprocessing requires cloudpickle to be installed
-        # Dependency removed in https://github.com/dask/dask/pull/5511
-        if actual_get is dask.multiprocessing.get:
-            return "multiprocessing"
-    except AttributeError:
-        pass
-
-    return "threaded"
-
+    pass
 
 def get_write_lock(key):
     """Get a scheduler appropriate lock for writing to the given resource.
@@ -186,10 +102,7 @@ def get_write_lock(key):
     -------
     Lock object that can be used like a threading.Lock object.
     """
-    scheduler = _get_scheduler()
-    lock_maker = _get_lock_maker(scheduler)
-    return lock_maker(key)
-
+    pass
 
 def acquire(lock, blocking=True):
     """Acquire a lock, possibly in a non-blocking fashion.
@@ -197,17 +110,7 @@ def acquire(lock, blocking=True):
     Includes backwards compatibility hacks for old versions of Python, dask
     and dask-distributed.
     """
-    if blocking:
-        # no arguments needed
-        return lock.acquire()
-    else:
-        # "blocking" keyword argument not supported for:
-        # - threading.Lock on Python 2.
-        # - dask.SerializableLock with dask v1.0.0 or earlier.
-        # - multiprocessing.Lock calls the argument "block" instead.
-        # - dask.distributed.Lock uses the blocking argument as the first one
-        return lock.acquire(blocking)
-
+    pass
 
 class CombinedLock:
     """A combination of multiple locks.
@@ -217,14 +120,7 @@ class CombinedLock:
     """
 
     def __init__(self, locks):
-        self.locks = tuple(set(locks))  # remove duplicates
-
-    def acquire(self, blocking=True):
-        return all(acquire(lock, blocking=blocking) for lock in self.locks)
-
-    def release(self):
-        for lock in self.locks:
-            lock.release()
+        self.locks = tuple(set(locks))
 
     def __enter__(self):
         for lock in self.locks:
@@ -234,21 +130,11 @@ class CombinedLock:
         for lock in self.locks:
             lock.__exit__(*args)
 
-    def locked(self):
-        return any(lock.locked for lock in self.locks)
-
     def __repr__(self):
-        return f"CombinedLock({list(self.locks)!r})"
-
+        return f'CombinedLock({list(self.locks)!r})'
 
 class DummyLock:
     """DummyLock provides the lock API without any actual locking."""
-
-    def acquire(self, blocking=True):
-        pass
-
-    def release(self):
-        pass
 
     def __enter__(self):
         pass
@@ -256,30 +142,10 @@ class DummyLock:
     def __exit__(self, *args):
         pass
 
-    def locked(self):
-        return False
-
-
 def combine_locks(locks):
     """Combine a sequence of locks into a single lock."""
-    all_locks = []
-    for lock in locks:
-        if isinstance(lock, CombinedLock):
-            all_locks.extend(lock.locks)
-        elif lock is not None:
-            all_locks.append(lock)
-
-    num_locks = len(all_locks)
-    if num_locks > 1:
-        return CombinedLock(all_locks)
-    elif num_locks == 1:
-        return all_locks[0]
-    else:
-        return DummyLock()
-
+    pass
 
 def ensure_lock(lock):
     """Ensure that the given object is a lock."""
-    if lock is None or lock is False:
-        return DummyLock()
-    return lock
+    pass
